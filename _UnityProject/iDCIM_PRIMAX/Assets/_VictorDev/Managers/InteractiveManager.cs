@@ -21,17 +21,17 @@ namespace VictorDev.Managers
         [SerializeField] private bool isOutlineVisibleInNormal = false;
 
         [Header(">>> 正常情況時(鼠標移出時)")]
-        [SerializeField] private float outLineWidth_Normal = 1;
+        [SerializeField] private float outLineWidth_Normal = 5;
         [SerializeField] private Color color_Normal = Color.white;
 
         [Header(">>> 當鼠標移入時")]
-        [SerializeField] private float outLineWidth_OnMouseOver = 2;
+        [SerializeField] private float outLineWidth_OnMouseOver = 5;
         [SerializeField] private Color color_OnMouseOver = Color.yellow;
 
         private List<Outline> outlines { get; set; } = new List<Outline>();
 
         [Header(">>> 點擊互動物件時")]
-        public UnityEvent<Transform> OnClickInteractiveItemEvent = new UnityEvent<Transform>();
+        public UnityEvent<Transform> onClickInteractiveItem = new UnityEvent<Transform>();
 
         private void Start()
         {
@@ -82,6 +82,6 @@ namespace VictorDev.Managers
             outline.OutlineColor = color_Normal;
         }
 
-        private void OnMouseClick(Outline outline) => OnClickInteractiveItemEvent?.Invoke(outline.transform);
+        private void OnMouseClick(Outline outline) => onClickInteractiveItem?.Invoke(outline.transform);
     }
 }
