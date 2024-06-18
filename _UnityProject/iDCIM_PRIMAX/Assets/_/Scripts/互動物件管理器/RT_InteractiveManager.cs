@@ -11,9 +11,18 @@ public class RT_InteractiveManager : InteractiveManagerWithShader
     [SerializeField] private ToggleGroup toggleGroup;
 
     [Header(">>> 當點擊到Indicator時")]
-    public UnityEvent<SO_RT> OnClickIndicator;
+    public UnityEvent<Transform, SO_RT> onClickIndicator;
 
     private List<RT_LineIndicator> indicatorList = new List<RT_LineIndicator>();
+
+    private void Awake()
+    {
+        onClickInteractiveItem.AddListener((targetTrans) =>
+        {
+            RT_LineIndicator indicator = targetTrans.GetChild(0).GetComponent<RT_LineIndicator>();
+            onClickIndicator.Invoke(targetTrans, indicator.soRTData);
+        });
+    }
 
     protected override void AddMoreComponentToObject(Collider target)
     {
@@ -21,10 +30,10 @@ public class RT_InteractiveManager : InteractiveManagerWithShader
 
         RT_LineIndicator indicator = target.transform.GetChild(0).GetComponent<RT_LineIndicator>();
         indicator.toggleGroup = toggleGroup;
-        indicator.onClickIndicator.AddListener(OnClickIndicator.Invoke);
         indicator.gameObject.SetActive(false);
         indicatorList.Add(indicator);
 
+        indicator.onClickIndicator.AddListener(soData => onClickIndicator.Invoke(target.transform, soData));
         indicator.onClickIndicator.AddListener(OnClickIndicatorHandler);
     }
 

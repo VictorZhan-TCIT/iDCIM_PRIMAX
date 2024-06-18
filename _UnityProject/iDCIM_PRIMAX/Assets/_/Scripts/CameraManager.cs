@@ -1,18 +1,27 @@
+using Cinemachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
-    // Start is called before the first frame update：
-    void Start()
+    [SerializeField] private CinemachineFreeLook cinemachineCamera;
+
+    private Transform lookAtTarget;
+
+    private void Awake()
     {
-         
+        lookAtTarget = cinemachineCamera.LookAt;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void LookAtTarget(Transform target)
     {
-        
+        lookAtTarget.position = target.position;
+    }
+
+    private void OnValidate()
+    {
+        cinemachineCamera ??= transform.GetChild(0).GetComponent<CinemachineFreeLook>();
     }
 }

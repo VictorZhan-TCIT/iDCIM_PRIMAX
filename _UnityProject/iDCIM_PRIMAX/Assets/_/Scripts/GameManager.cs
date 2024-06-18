@@ -1,18 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update：
-    void Start()
+    [SerializeField] private CameraManager cameraManager;
+    [SerializeField] private Module[] modules;
+    private void Awake()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        modules.ToList().ForEach(module =>
+        {
+            module.onClickModel.AddListener(cameraManager.LookAtTarget);
+        });
     }
 }

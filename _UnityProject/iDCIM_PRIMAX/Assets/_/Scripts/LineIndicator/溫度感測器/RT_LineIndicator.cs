@@ -14,6 +14,7 @@ public class RT_LineIndicator : LineIndicator
     public UnityEvent<SO_RT> onClickIndicator;
 
     public ToggleGroup toggleGroup { set => toggle.group = value; }
+    public SO_RT soRTData => soRT;
 
     /// <summary>
     /// 設定溫度度數

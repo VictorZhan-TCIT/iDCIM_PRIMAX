@@ -6,17 +6,6 @@ public class InteractiveManagerWithShader : InteractiveManager
 {
     private Dictionary<Transform, Material> materialDict { get; set; } = new Dictionary<Transform, Material>();
 
-    private void Awake()
-    {
-        onClickInteractiveItem.AddListener(onClickHandler);
-    }
-
-    private void onClickHandler(Transform target)
-    {
-        SetIndicatorVisible(true);
-        materialDict[target].SetInt("_IsSelected", 1);
-    }
-
     protected override void AddMoreComponentToObject(Collider target)
     {
         if (target.TryGetComponent<MeshRenderer>(out MeshRenderer meshRenderer))
@@ -37,6 +26,12 @@ public class InteractiveManagerWithShader : InteractiveManager
             material.SetInt("_IsActivated", (isVisible ? 1 : 0));
             material.SetInt("_IsSelected", 0);
         }
+    }
+
+    protected void SetShaderVisible(Transform targetTrans)
+    {
+        SetIndicatorVisible(true);
+        materialDict[targetTrans].SetInt("_IsSelected", 1);
     }
 
     private void OnApplicationQuit()

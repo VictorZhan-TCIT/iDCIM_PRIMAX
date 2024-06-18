@@ -57,7 +57,7 @@ Material:
     - _: 0
     - _FreshelPower: 2
     - _IsActivate: 0
-    - _IsActivated: 1
+    - _IsActivated: 0
     - _IsSelected: 0
     - _LoopSpeed: 4
     - _QueueControl: 0
