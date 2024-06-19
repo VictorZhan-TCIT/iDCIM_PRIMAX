@@ -1,21 +1,18 @@
 using UnityEngine;
-using UnityEngine.Events;
 
-public class CCTV_UIManager : UIManager
+public class CCTV_UIManager : MonoBehaviour
 {
-    public UnityEvent<CCTV_ModelDataHandler> onClickClosePanel;
+    private CCTV_DataHandler cctvDataHandler;
 
-    private CCTV_ModelDataHandler cctvDataHandler;
-
-    public void SetDataHandler(CCTV_ModelDataHandler dataHandler)
+    public void SetDataHandler(CCTV_DataHandler dataHandler)
     {
-        Debug.Log($"CCTV_UIManager:");
+        Debug.Log($"CCTV_UIManager: {dataHandler.name} / isOn: {dataHandler.IsSelected}");
         cctvDataHandler = dataHandler;
     }
 
     [ContextMenu("Send Event")]
     private void onClickClosePanelHandler()
     {
-        onClickClosePanel.Invoke(cctvDataHandler);
+        cctvDataHandler.IsSelected = false;
     }
 }

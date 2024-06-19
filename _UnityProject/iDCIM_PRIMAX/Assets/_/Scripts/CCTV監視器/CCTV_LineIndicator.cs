@@ -5,28 +5,25 @@ using UnityEngine.UI;
 public class CCTV_LineIndicator : LineIndicator
 {
     [Header(">>> CCTV_LineIndicator")]
-   
+
     [SerializeField] private Toggle toggle;
 
-    [Header(">>> ·íÂI¿ïToggle®É")]
-    public UnityEvent<Transform, bool> onToggleOn;
+    [Header(">>> ç•¶é»é¸Toggleæ™‚")]
+    public UnityEvent<Transform, bool> onToggleChanged;
 
     public ToggleGroup toggleGroup { set => toggle.group = value; }
 
-    public bool IsOn { set => toggle.isOn = value; }
-
-
+    public bool IsOn
+    {
+        get => toggle.isOn;
+        set => toggle.isOn = value;
+    }
+ 
     private void Awake()
     {
         toggle.onValueChanged.AddListener((isOn) =>
         {
-            onToggleOn.Invoke(transform.parent, isOn);
+            onToggleChanged.Invoke(transform.parent, isOn);
         });
-    }
-
-    private void OnEnable()
-    {
-        toggle.isOn = false; //¤£¨£±o·|Ä²µoOnValueChanged¨Æ¥ó
-        toggle.onValueChanged.Invoke(false);
     }
 }

@@ -1,80 +1,80 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using VictorDev.Managers;
 
 /// <summary>
-/// ¤¬°Êª«¥óºŞ²z¾¹ - CCTVºÊµø¾¹
+/// äº’å‹•ç‰©ä»¶ç®¡ç†å™¨ - CCTVç›£è¦–å™¨
 /// </summary>
 public class CCTV_InteractiveManager : InteractiveManager
 {
     [Header(">>> CCTV_InteractiveManager")]
     [SerializeField] private ToggleGroup toggleGroup;
 
-    [Header(">>> ·íÂIÀ»¨ìIndicator®É")]
-    public UnityEvent<CCTV_ModelDataHandler> onClickTarget;
+    [Header(">>> ç•¶é»æ“Šåˆ°Indicatoræ™‚")]
+    public UnityEvent<CCTV_DataHandler> onToggleChanged;
 
-    private Dictionary<Transform, CCTV_ModelDataHandler> modelHandlerDict { get; set; } = new Dictionary<Transform, CCTV_ModelDataHandler>();
+    private Dictionary<Transform, CCTV_DataHandler> dataHandlerDict { get; set; } = new Dictionary<Transform, CCTV_DataHandler>();
 
     /// <summary>
-    /// ·íÂI¿ï¼Ò«¬ª«¥ó®É
+    /// ç›®å‰æ‰€é¸å–çš„CCTV_DataHandlerç‰©ä»¶
     /// </summary>
-    private void Awake() => onClickInteractiveItem.AddListener((targetTrans) =>
-    {
-        OnClickTargetHandler(targetTrans, !modelHandlerDict[targetTrans].IsSelected);
-    });
+    private CCTV_DataHandler selectedDataHandler = null;
 
     protected override void AddMoreComponentToObject(Collider target)
     {
         CCTV_LineIndicator indicator = target.transform.GetChild(0).GetComponent<CCTV_LineIndicator>();
         indicator.toggleGroup = toggleGroup;
-        indicator.onToggleOn.AddListener(OnClickTargetHandler);
+        indicator.onToggleChanged.AddListener(OnToggleChangedHandler);
 
-        CCTV_ModelDataHandler dataHandler = target.AddComponent<CCTV_ModelDataHandler>();
-        dataHandler.SetLineIndicator(indicator);
+        CCTV_DataHandler dataHandler = target.GetComponent<CCTV_DataHandler>();
+        dataHandler.ShaderMaterial = target.GetComponent<MeshRenderer>().material;
 
-        modelHandlerDict[target.transform] = dataHandler;
+        dataHandlerDict[target.transform] = dataHandler;
+    }
+    private void Awake()
+    {
+        // ç•¶é»é¸æ¨¡å‹ç‰©ä»¶æ™‚
+        onClickInteractiveItem.AddListener((targetTrans) =>
+        {
+            dataHandlerDict[targetTrans].IsSelected = !dataHandlerDict[targetTrans].IsSelected;
+        });
     }
 
     /// <summary>
-    /// ·íÂI¿ï¹Ï¼Ğ®É
+    /// ç•¶é»é¸åœ–æ¨™Toggleæˆ–ç›´æ¥æ”¹è®ŠToggleç‹€æ…‹æ™‚
     /// </summary>
-    private void OnClickTargetHandler(Transform targetTrans, bool isOn)
+    private void OnToggleChangedHandler(Transform targetTrans, bool isOn)
     {
-        if (isOn == false) modelHandlerDict[targetTrans].SetSelected(false);
+        //å–æ¶ˆç›®æ¨™é¸å–ç‹€æ…‹
+        if (isOn == false) dataHandlerDict[targetTrans].IsSelected = false;
         else
         {
-            foreach (Transform target in modelHandlerDict.Keys)
+            if (selectedDataHandler != null)
             {
-                if (targetTrans == target)
+                //åˆ¤æ–·é»æ“Šçš„å°åƒæ˜¯å¦ç‚ºåŒä¸€å€‹
+                if (dataHandlerDict[targetTrans] != selectedDataHandler)
                 {
-                    modelHandlerDict[target].SetSelected(true);
-                    onClickTarget.Invoke(modelHandlerDict[target]);
-                }
-                else
-                {
-                    modelHandlerDict[target].SetSelected(false);
+                    selectedDataHandler.IsSelected = false;
+                    selectedDataHandler = dataHandlerDict[targetTrans];
                 }
             }
+            dataHandlerDict[targetTrans].IsSelected = true;
         }
+        onToggleChanged.Invoke(dataHandlerDict[targetTrans]);
     }
     /// <summary>
-    /// ³]¸mIndicatorÅã¥Ü/ÁôÂÃ (¨ÑToggle¨Ï¥Î)
+    /// è¨­ç½®Indicatoré¡¯ç¤º/éš±è— (ä¾›ä¸»é¸å–®Toggleä½¿ç”¨)
     /// </summary>
     public void SetIndicatorVisible(bool isVisible)
     {
         SetOutlineVisible(isVisible);
-
-        foreach (Transform target in modelHandlerDict.Keys)
+        foreach (Transform target in dataHandlerDict.Keys)
         {
-            modelHandlerDict[target].SetActivated(isVisible);
+            dataHandlerDict[target].IsActivated = isVisible;
         }
     }
-    /// <summary>
-    /// ³]¸m¥Ø¼ĞDataHandler¨ú®ø¿ï¨úª¬ºA
-    /// </summary>
-    public void SetTargetUnSelected(CCTV_ModelDataHandler dataHandler) => dataHandler.SetSelected(false);
+
     private void OnValidate() => toggleGroup ??= GetComponent<ToggleGroup>();
 }

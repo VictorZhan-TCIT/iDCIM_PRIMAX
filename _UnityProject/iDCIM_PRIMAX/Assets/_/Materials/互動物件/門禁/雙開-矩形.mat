@@ -64,7 +64,7 @@ Material:
     - _QueueOffset: 0
     m_Colors:
     - _FreshelPowerRange: {r: 1, g: 3, b: 0, a: 0}
-    - _FresnelColor: {r: 0, g: 0.49803925, b: 0.40784317, a: 1}
+    - _FresnelColor: {r: 0, g: 0.74901956, b: 0.6133704, a: 1}
     - _LoopRange: {r: 1, g: 10, b: 0, a: 0}
     - _SelectColor: {r: 4, g: 3.4138513, b: 0, a: 1}
     - _Vector2: {r: 1, g: 5, b: 0, a: 0}
