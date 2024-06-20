@@ -64,7 +64,7 @@ public class VoltageUIController : MonoBehaviour
 
         if (txtValue != null)
         {
-            txtValue.text = $"{curentValue}/{maxValue}";
+            txtValue.text = $"{curentValue} / {maxValue} W";
         }
     }
 }
