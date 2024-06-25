@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 9079581206762844427}
   - component: {fileID: 7719433524944784142}
   - component: {fileID: 3953418418564994018}
+  - component: {fileID: 3698022756234958182}
   m_Layer: 0
   m_Name: Slider
   m_TagString: Untagged
@@ -165,7 +166,19 @@ MonoBehaviour:
   m_Value: 50000
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8184216187766434655}
+        m_TargetAssemblyTypeName: SpeedometerController, Assembly-CSharp
+        m_MethodName: set_value
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!222 &7719433524944784142
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -204,6 +217,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3698022756234958182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3720028251050198526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2809c606cc9a984449aaa9a20ab6af39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  duration: 1.5
+  slider: {fileID: 9079581206762844427}
+  textMeshPro: {fileID: 0}
 --- !u!1 &6249541801386573662
 GameObject:
   m_ObjectHideFlags: 0
@@ -672,7 +700,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 50000 / 50000 W W
+  m_text: 50000 / 50000 W
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: aa9b8e16560037c46b4aec29319b44cb, type: 2}
   m_sharedMaterial: {fileID: 5017047914023586211, guid: aa9b8e16560037c46b4aec29319b44cb, type: 2}

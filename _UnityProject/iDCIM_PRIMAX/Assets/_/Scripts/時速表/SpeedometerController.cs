@@ -38,13 +38,11 @@ public class SpeedometerController : MonoBehaviour
         set
         {
             slider.value = Mathf.Max(value, 0);
-
             currentValue = slider.value;
-
             imgSliderBar.color = ColorUtils.GetColorLevelFromPercentage(percentage);
 
             txtValue.SetText($"{slider.value}");
-            if (isShowMaxValue) txtValue.SetText($"{txtValue.text} / {slider.maxValue} {unitText}");
+            if (isShowMaxValue) txtValue.SetText($"{txtValue.text} / {slider.maxValue}");
             txtValue.SetText($"{txtValue.text} {unitText}");
 
             txtPercent.SetText($"{Mathf.FloorToInt(percentage * 100)}{StringHandler.SetFontSizeString(" %", 14)}");
