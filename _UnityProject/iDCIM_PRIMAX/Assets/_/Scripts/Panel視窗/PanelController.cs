@@ -14,18 +14,29 @@ public class PanelController : MonoBehaviour
     [Header(">>>當點擊關閉按鈕時")]
     public UnityEvent onClickCloseButton;
 
+    /// <summary>
+    /// 當點擊放大按鈕時
+    /// </summary>
+    [Header(">>>當點擊放大按鈕時")]
+    public UnityEvent onClickScaleButton;
+
     [Header(">>>UI組件")]
     [SerializeField] private TextMeshProUGUI txtTitle;
-    [SerializeField] private Button btnClose;
+    [SerializeField] private Button btnClose, btnScale;
 
-    public string Title => txtTitle.text;
-    public bool CloseButtonVisible { set => btnClose.gameObject.SetActive(value); }
+    /// <summary>
+    /// 視窗標題
+    /// </summary>
+    public string Title { get => txtTitle.text; set => txtTitle.text = value; }
 
-    private void Awake() => btnClose.onClick.AddListener(onClickCloseButton.Invoke);
+    private void Awake()
+    {
+        if (btnClose != null) btnClose.onClick.AddListener(onClickCloseButton.Invoke);
+        if (btnScale != null) btnScale.onClick.AddListener(onClickScaleButton.Invoke);
+    }
     private void OnValidate()
     {
         txtTitle ??= transform.Find("txtTitle").GetComponent<TextMeshProUGUI>();
-        btnClose ??= txtTitle.transform.GetChild(0).GetComponent<Button>();
         txtTitle.SetText(titleText);
 
         name = $"Panel視窗 - {titleText}";

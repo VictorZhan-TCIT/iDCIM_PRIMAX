@@ -33,6 +33,9 @@ public class MoveFadeController : MonoBehaviour
     private float currentAlpha { get; set; }
     private float targetDealy { get; set; }
 
+    private Tween fadeTween { get; set; }
+    private Tween moveTween { get; set; }
+
     private void Awake()
     {
         originalPos = new Vector2(0, transform.localPosition.y);
@@ -48,16 +51,18 @@ public class MoveFadeController : MonoBehaviour
         if (isFading)
         {
             currentAlpha = (cg.alpha == 1) ? 0 : cg.alpha;
-            cg.DOFade(1, duration).From(currentAlpha).SetEase(ease).SetDelay(targetDealy);
+            fadeTween = cg.DOFade(1, duration).From(currentAlpha).SetEase(ease).SetDelay(targetDealy);
         }
 
         // LocalMove
-        if (offsetPos.y == 0 && offsetPos.x != 0) 
-            rectTrans.DOLocalMoveX(originalPos.x, duration).From(formPos.x).SetEase(ease).SetDelay(targetDealy).OnStart(OnStartHandler).OnComplete(OnCompleteHandler);
-        else if (offsetPos.x == 0 && offsetPos.y != 0) 
-            rectTrans.DOLocalMoveY(originalPos.y, duration).From(formPos.y).SetEase(ease).SetDelay(targetDealy).OnStart(OnStartHandler).OnComplete(OnCompleteHandler);
-        else 
-            rectTrans.DOLocalMove(originalPos, duration).From(formPos).SetEase(ease).SetDelay(targetDealy).OnStart(OnStartHandler).OnComplete(OnCompleteHandler);
+        if (offsetPos.y == 0 && offsetPos.x != 0)
+            moveTween = rectTrans.DOLocalMoveX(originalPos.x, duration).From(formPos.x);
+        else if (offsetPos.x == 0 && offsetPos.y != 0)
+            moveTween = rectTrans.DOLocalMoveY(originalPos.y, duration).From(formPos.y);
+        else
+            moveTween = rectTrans.DOLocalMove(originalPos, duration).From(formPos);
+
+        moveTween = moveTween.SetEase(ease).SetDelay(targetDealy).OnStart(OnStartHandler).OnComplete(OnCompleteHandler);
     }
 
     private void OnStartHandler() => cg.interactable = false;
@@ -72,4 +77,11 @@ public class MoveFadeController : MonoBehaviour
         cg ??= GetComponent<CanvasGroup>();
         rectTrans ??= GetComponent<RectTransform>();
     }
+
+    private void OnDisable()
+    {
+        fadeTween.Kill();
+        moveTween.Kill();
+    }
+
 }

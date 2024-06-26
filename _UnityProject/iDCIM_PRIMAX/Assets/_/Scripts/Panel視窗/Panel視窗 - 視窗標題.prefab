@@ -343,8 +343,12 @@ MonoBehaviour:
   onClickCloseButton:
     m_PersistentCalls:
       m_Calls: []
+  onClickScaleButton:
+    m_PersistentCalls:
+      m_Calls: []
   txtTitle: {fileID: 5877784822589290238}
   btnClose: {fileID: 1541064087222067599}
+  btnScale: {fileID: 0}
 --- !u!222 &1943412923041204213
 CanvasRenderer:
   m_ObjectHideFlags: 0

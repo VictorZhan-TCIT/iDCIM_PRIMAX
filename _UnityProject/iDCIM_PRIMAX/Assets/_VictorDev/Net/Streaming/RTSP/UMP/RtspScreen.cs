@@ -1,10 +1,6 @@
-using System.Linq;
 using UMP;
-using Unity.VisualScripting;
-using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Experimental.Rendering.Universal;
 using UnityEngine.UI;
 using VictorDev.UI;
 using Debug = VictorDev.Common.DebugHandler;
@@ -111,7 +107,10 @@ namespace VictorDev.Net.RTSP.UMPPlugin
         public void Stop()
         {
             mediaPlayer.Stop();
+            Debug.Log("mediaPlayer.Stop()");
         }
+
+        private void OnDisable() => Stop();
 
 
         private void OnValidate()
