@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -8,22 +10,28 @@ public class CCTV_UIManager : MonoBehaviour
     [Header(">>> CCTV列表")]
     [SerializeField] private CCTVList cctvList;
 
+    [Header(">>> CCTV播放器Prefab")]
+    [SerializeField] private CCTV_Player cctvPlayerPrefab;
+
     [Header(">>> 左上角CCTV播放器 - 機房入口")]
     [SerializeField] private CCTV_Player cctvPlayer_Entrance;
     [Header(">>> 右下角CCTV播放器")]
     [SerializeField] private CCTV_Player cctvPlayer;
     [Header(">>> CCTV全螢幕播放器")]
     [SerializeField] private CCTV_Player fullScreenCCTVPlayer;
-    [Header(">>> 監控總覽頁面")]
-    [SerializeField] private Button btnMonitor;
-    [SerializeField] private CCTV_MonitorPage page_Monitor;
+
+    [SerializeField] private Button btnCloseOfFullScreen;
+
+
+    [Header(">>> 播放器橫向清單")]
+    [SerializeField] private Transform playersContainer;
 
     [Header(">>> 當列表項目Toggle變化時Invoke")]
     public UnityEvent<SO_CCTV, bool> onToggleChanged;
 
     private CCTV_DataHandler dataHandler;
 
-    private Dictionary<SO_CCTV, CCTV_Player> cctvPlayerDict { get; set; } = new Dictionary<SO_CCTV, CCTV_Player>();
+    private Dictionary<SO_CCTV, CCTV_Player> playerDictionary { get; set; } = new Dictionary<SO_CCTV, CCTV_Player>();
 
     private void Awake()
     {
@@ -33,19 +41,48 @@ public class CCTV_UIManager : MonoBehaviour
         cctvPlayer_Entrance.onClickScaleButton.AddListener(PlayFullScreenCCTV);
         cctvPlayer.onClickScaleButton.AddListener(PlayFullScreenCCTV);
 
-        btnMonitor.onClick.AddListener(() =>
+        btnCloseOfFullScreen.onClick.AddListener(() =>
         {
-            page_Monitor.SetDataList(cctvList.SoDataList);
+            playerDictionary.Values.ToList().ForEach(player =>
+            {
+                player.Play();
+            });
         });
     }
 
+    /// <summary>
+    /// 點選清單上項目時
+    /// </summary>
     private void onToggleChangedHandler(SO_CCTV soData, bool isOn)
     {
-        if (isOn) cctvPlayer.Play(soData);
+        if (playerDictionary.ContainsKey(soData))
+        {
+            if (isOn == false) playerDictionary[soData].StopAndClose();
+            playerDictionary.Remove(soData);
+        }
+        else
+        {
+            StartCoroutine(CreatePlayer(soData));
+        }
+    }
+
+    /// <summary>
+    /// 建立CCTV播放器
+    /// </summary>
+    private IEnumerator CreatePlayer(SO_CCTV soData)
+    {
+        yield return new WaitForEndOfFrame();
+        CCTV_Player player = ObjectPoolManager.GetInstanceFromQueuePool<CCTV_Player>(cctvPlayerPrefab);
+        player.transform.parent = playersContainer;
+        player.soData = soData;
+        player.onClickScaleButton.AddListener(PlayFullScreenCCTV);
+        playerDictionary[soData] = player;
     }
 
     public void PlayFullScreenCCTV(SO_CCTV soData)
     {
+        playerDictionary.Values.ToList().ForEach(player => player.Pause());
+
         fullScreenCCTVPlayer.soData = soData;
         fullScreenCCTVPlayer.transform.parent.gameObject.SetActive(true);
         fullScreenCCTVPlayer.gameObject.SetActive(true);

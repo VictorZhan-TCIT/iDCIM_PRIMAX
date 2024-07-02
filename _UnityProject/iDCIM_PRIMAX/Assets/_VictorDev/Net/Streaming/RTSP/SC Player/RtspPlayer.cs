@@ -36,7 +36,7 @@ namespace VictorDev.Net.RTSP.SCPlayerPlugin
 
             scRenderer = GetComponentInChildren<SCUGUIRenderer>();
             // 發送事件
-            scRenderer.onRenderFrameEvent += (texture) => onRenderFrameEvent?.Invoke(texture);
+            //scRenderer.onRenderFrameEvent += (texture) => onRenderFrameEvent?.Invoke(texture);
 
             scPlayer = scRenderer.GetComponentInChildren<UnitySCPlayerPro>();
             scPlayer.options = options;

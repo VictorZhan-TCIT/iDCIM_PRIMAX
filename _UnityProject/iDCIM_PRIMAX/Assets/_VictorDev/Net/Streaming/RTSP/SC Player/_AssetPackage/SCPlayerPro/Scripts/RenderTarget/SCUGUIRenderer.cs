@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,15 +12,13 @@ namespace Sttplay.MediaPlayer
     [RequireComponent(typeof(RawImage))]
     public class SCUGUIRenderer : SCRenderTarget
     {
-        /// <summary>
-        /// 當成功接收rtsp串流影像時
-        /// </summary>
-        public Action<Texture> onRenderFrameEvent;
 
         /// <summary>
         /// renderer target
         /// </summary>
         private RawImage rawImage;
+
+
 
         private void Awake()
         {
@@ -44,11 +43,7 @@ namespace Sttplay.MediaPlayer
                 if (split == null)
                 {
                     if (player.OpenSuccessed)
-                    {
                         rawImage.texture = player.VideoRenderer.SCRenderer.SyntheticTexture;
-                        //事件發送
-                        onRenderFrameEvent?.Invoke(rawImage.texture);
-                    }
                 }
                 else
                     OnRenderFrame(player.VideoRenderer.SCRenderer);

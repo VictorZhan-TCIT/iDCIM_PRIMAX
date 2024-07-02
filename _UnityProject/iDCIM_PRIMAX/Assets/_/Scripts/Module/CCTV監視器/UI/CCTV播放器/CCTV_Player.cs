@@ -66,6 +66,8 @@ public class CCTV_Player : MonoBehaviour
         Play();
     }
 
+    public void Pause() => rtspScreen.Pause();
+
     public void Stop() => rtspScreen.Stop();
 
     public void StopAndClose()

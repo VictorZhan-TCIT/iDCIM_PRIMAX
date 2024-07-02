@@ -32,7 +32,7 @@ public class SCPlayerInspectorEditor : Editor
     private SerializedProperty _propOnFirstFrameRenderEvent;
     private SerializedProperty _propOnRendererVideoFrameEvent;
 
-    [UnityEditor.MenuItem("GameObject/SCPlayerPro/SCPlayerPro", false, 10)]
+    [MenuItem("GameObject/SCPlayerPro/SCPlayerPro", false, 10)]
     public static void CreateSCPlayerEditor()
     {
         GameObject go = new GameObject("SCPlayerPro");
@@ -41,7 +41,7 @@ public class SCPlayerInspectorEditor : Editor
         Undo.RegisterCreatedObjectUndo(go, "Create SCUGUICanvas");
     }
 
-    [UnityEditor.MenuItem("GameObject/UI/SCUGUICanvas", false, 10000)]
+    [MenuItem("GameObject/UI/SCUGUICanvas", false, 10000)]
     public static void CreateSCPlayerCanvasEditor()
     {
         GameObject parent = Selection.activeGameObject;

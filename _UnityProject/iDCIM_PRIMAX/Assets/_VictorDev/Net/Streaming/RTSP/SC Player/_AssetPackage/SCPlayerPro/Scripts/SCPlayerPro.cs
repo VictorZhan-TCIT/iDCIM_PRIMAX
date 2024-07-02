@@ -259,8 +259,8 @@ namespace Sttplay.MediaPlayer
         private bool audioEOF = false;
         private AudioOutputFormat audioOutputFmt = AudioOutputFormat.FLT;
         private int packetCacheCount = 1;
-        private int fixedWidth { get; set; } = 0;
-        private int fixedHeight { get; set; } = 0;
+        private int fixedWidth = 0;
+        private int fixedHeight = 0;
         private static ISCNative.SCOption[] internalOptions = {
             new ISCNative.SCOption("packet_cache",               ISCNative.HAS_ARG,                ""), 
             new ISCNative.SCOption("",                           ISCNative.FINISH_FLG,             "") };

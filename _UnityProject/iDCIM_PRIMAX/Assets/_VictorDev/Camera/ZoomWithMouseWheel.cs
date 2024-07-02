@@ -76,7 +76,7 @@ namespace VictorDev.CameraHandler
 #if UNITY_EDITOR || UNITY_WEBGL
             AdjustRadius(scrollWheelValue * zoomSpeed);
 #elif PLATFORM_ANDROID
-            AdjustRadius(MobileInputHandler.ZoomByFingerScale());
+          //  AdjustRadius(MobileInputHandler.ZoomByFingerScale());
 #endif
 
             Vector3 pos = freeLookCamera.transform.position;

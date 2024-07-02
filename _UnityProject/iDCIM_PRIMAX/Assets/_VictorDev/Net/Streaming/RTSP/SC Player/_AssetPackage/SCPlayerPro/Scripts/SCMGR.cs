@@ -48,7 +48,6 @@ namespace Sttplay.MediaPlayer
         /// Initialize SCPlayerPro and add the player to the players list
         /// </summary>
         /// <param name="player"></param>
-        [System.Obsolete]
         public static void InitSCPlugins(UnitySCPlayerPro player)
         {
             if (Instance == null)
@@ -68,7 +67,6 @@ namespace Sttplay.MediaPlayer
         /// <summary>
         /// Set the instance to singleton mode, and do not destroy the object 
         /// </summary>
-        [System.Obsolete]
         private void Awake()
         {
             if (Instance == null)
@@ -125,7 +123,7 @@ namespace Sttplay.MediaPlayer
 #elif UNITY_ANDROID
             return frameRate;
 #else
-            return 0;
+            return 0
 #endif
         }
 

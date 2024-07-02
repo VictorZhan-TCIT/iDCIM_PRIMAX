@@ -202,11 +202,9 @@ namespace Sttplay.MediaPlayer
         private int _decoderFps;
         private long lastTs;
         private SCPlayerProContext playerContext;
-
         /// <summary>
         /// Initialize the plugin and set up events
         /// </summary>
-        [Obsolete]
         private void Awake()
         {
             SCMGR.InitSCPlugins(this);

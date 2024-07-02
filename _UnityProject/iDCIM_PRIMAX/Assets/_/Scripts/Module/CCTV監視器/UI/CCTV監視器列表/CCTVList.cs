@@ -9,7 +9,6 @@ public class CCTVList : ScrollRectToggleList<CCTVListItem, SO_CCTV>
 {
     [Header(">>> ·j´M¿é¤J®Ø")]
     [SerializeField] private SearchBar searchBar;
-    [SerializeField] private ToggleGroup toggleGroup;
 
     private void Awake()
     {
@@ -17,10 +16,6 @@ public class CCTVList : ScrollRectToggleList<CCTVListItem, SO_CCTV>
         searchBar.onClickSearchButton.AddListener(OnSearchHandler);
     }
 
-    protected override void OnCreateEachItem(CCTVListItem item, SO_CCTV soData)
-    {
-        item.toggleGroup = toggleGroup;
-    }
 
     private void OnSearchHandler(string searchString)
     {
@@ -30,6 +25,5 @@ public class CCTVList : ScrollRectToggleList<CCTVListItem, SO_CCTV>
     private void OnValidate()
     {
         searchBar ??= transform.Find("SearchBar").GetComponent<SearchBar>();
-        toggleGroup ??= GetComponent<ToggleGroup>();
     }
 }
