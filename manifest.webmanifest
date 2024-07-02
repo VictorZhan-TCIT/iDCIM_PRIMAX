@@ -1,6 +1,6 @@
 {
-    "name": "iDCIM_PRIMAX",
-    "short_name": "iDCIM_PRIMAX",
+    "name": "iDCIM_PRIMAX_NoStream",
+    "short_name": "iDCIM_PRIMAX_NoStream",
     "start_url": "index.html",
     "display": "fullscreen",
     "background_color": "#231F20",

@@ -38,7 +38,7 @@ public class MoveFadeController : MonoBehaviour
 
     private void Awake()
     {
-        originalPos = new Vector2(0, transform.localPosition.y);
+        originalPos = new Vector2(transform.localPosition.x, transform.localPosition.y);
         formPos = originalPos + offsetPos;
     }
 
@@ -55,6 +55,12 @@ public class MoveFadeController : MonoBehaviour
         }
 
         // LocalMove
+        if(offsetPos == Vector2.zero)
+        {
+            OnCompleteHandler();
+            return;
+        }
+
         if (offsetPos.y == 0 && offsetPos.x != 0)
             moveTween = rectTrans.DOLocalMoveX(originalPos.x, duration).From(formPos.x);
         else if (offsetPos.x == 0 && offsetPos.y != 0)

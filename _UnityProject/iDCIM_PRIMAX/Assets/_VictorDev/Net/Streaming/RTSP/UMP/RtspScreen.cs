@@ -1,4 +1,6 @@
+using System.Collections;
 using UMP;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -24,7 +26,6 @@ namespace VictorDev.Net.RTSP.UMPPlugin
         [SerializeField] private RawImage rawImg;
         public Texture RendereringTexture => rawImg.mainTexture;
 
-
         [Header(">>> 是否一開始就自動播放")]
         public bool isAutoPlay = true;
 
@@ -41,8 +42,15 @@ namespace VictorDev.Net.RTSP.UMPPlugin
         [Header(">>> 當影片Buffering結束時")]
         public UnityEvent<float> OnVideoBuffering;
 
+        private int reloadInterval = 5;
+        private float currentPercent = 0;
+        private Coroutine reloadCoroutine;
+
+        private void OnEnable() => Debug.Log($"OnEnable: {uri}");
+
         private void Start()
         {
+            Debug.Log("Start");
             mediaPlayer.RenderingObjects = renderingGameObjects;
 
             mediaPlayer.AddBufferingEvent(OnBuffering);
@@ -57,11 +65,33 @@ namespace VictorDev.Net.RTSP.UMPPlugin
 
         private void OnBuffering(float percent)
         {
-            Debug.Log($"\t[OnBuffering] percent: {percent}");
+            Debug.Log($"\t[{uri}] OnBuffering:{percent}%");
             progressBar.SetActive((percent != 100));
             txtPercent.text = $"{percent.ToString("F0")}{HtmlTagHandler.ToSetSize("%", txtPercent.fontSize * 0.5f)}";
 
             OnVideoBuffering.Invoke(percent);
+
+            currentPercent = percent;
+
+            // 等於0時啟動Coroutine
+            if (currentPercent == 0)
+            {
+                if (reloadCoroutine == null) reloadCoroutine = StartCoroutine(BufferingCheck());
+            }
+            else
+            {
+                //大於0時終止Coroutine
+                if (reloadCoroutine != null) StopCoroutine(reloadCoroutine);
+            }
+        }
+
+        private IEnumerator BufferingCheck()
+        {
+            while (currentPercent == 0)
+            {
+                yield return new WaitForSeconds(reloadInterval);
+                if (currentPercent == 0) Play();
+            }
         }
 
         private void OnPlaying()
@@ -85,6 +115,8 @@ namespace VictorDev.Net.RTSP.UMPPlugin
             }
             mediaPlayer.Path = this.uri;
             mediaPlayer.Play();
+
+            Debug.Log($"Play: {uri}");
         }
 
         /// <summary>
@@ -107,11 +139,17 @@ namespace VictorDev.Net.RTSP.UMPPlugin
         public void Stop()
         {
             mediaPlayer.Stop();
-            Debug.Log("mediaPlayer.Stop()");
+            Debug.Log($"mediaPlayer.Stop() : {this.uri}");
         }
 
-        private void OnDisable() => Stop();
+        private void OnDisable()
+        {
+            Debug.Log($"OnDisable: {uri}");
 
+            Stop();
+            currentPercent = 0;
+            if (reloadCoroutine != null) StopCoroutine(reloadCoroutine);
+        }
 
         private void OnValidate()
         {

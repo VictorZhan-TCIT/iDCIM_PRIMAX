@@ -5,18 +5,18 @@ using UnityEngine.UI;
 
 public class CCTV_UIManager : MonoBehaviour
 {
-
-    [Header(">>> CCTV播放器Prefab")]
-    [SerializeField] private CCTV_Player cctvPlayerPrefab;
-
-    [Header(">>> 放播放器的容器")]
-    [SerializeField] private ScrollRect containerOfPlayer;
-
     [Header(">>> CCTV列表")]
     [SerializeField] private CCTVList cctvList;
 
-    [Header(">>> CCTV大尺吋播放器")]
+    [Header(">>> 左上角CCTV播放器 - 機房入口")]
+    [SerializeField] private CCTV_Player cctvPlayer_Entrance;
+    [Header(">>> 右下角CCTV播放器")]
+    [SerializeField] private CCTV_Player cctvPlayer;
+    [Header(">>> CCTV全螢幕播放器")]
     [SerializeField] private CCTV_Player fullScreenCCTVPlayer;
+    [Header(">>> 監控總覽頁面")]
+    [SerializeField] private Button btnMonitor;
+    [SerializeField] private CCTV_MonitorPage page_Monitor;
 
     [Header(">>> 當列表項目Toggle變化時Invoke")]
     public UnityEvent<SO_CCTV, bool> onToggleChanged;
@@ -28,40 +28,26 @@ public class CCTV_UIManager : MonoBehaviour
     private void Awake()
     {
         cctvList.onToggleChanged.AddListener(onToggleChanged.Invoke);
-        cctvList.onToggleChanged.AddListener(OnListItemToggleChanged);
-        ObjectPoolManager.PushToPool<CCTV_Player>(containerOfPlayer.content);
+        cctvList.onToggleChanged.AddListener(onToggleChangedHandler);
+
+        cctvPlayer_Entrance.onClickScaleButton.AddListener(PlayFullScreenCCTV);
+        cctvPlayer.onClickScaleButton.AddListener(PlayFullScreenCCTV);
+
+        btnMonitor.onClick.AddListener(() =>
+        {
+            page_Monitor.SetDataList(cctvList.SoDataList);
+        });
     }
 
-    private void OnListItemToggleChanged(SO_CCTV soData, bool isOn)
+    private void onToggleChangedHandler(SO_CCTV soData, bool isOn)
     {
-        if (isOn)
-        {
-            //若目前不存在此播放器，則新增
-            if (cctvPlayerDict.ContainsKey(soData) == false)
-            {
-                CCTV_Player player = ObjectPoolManager.GetInstanceFromQueuePool<CCTV_Player>(cctvPlayerPrefab);
-                player.soData = soData;
-                player.transform.parent = containerOfPlayer.content;
-                player.transform.SetAsFirstSibling();
-                player.onClickScaleButton.AddListener(OnClickScaleButtonHandler);
-
-                containerOfPlayer.verticalNormalizedPosition = 1;
-                cctvPlayerDict[soData] = player;
-            }
-        }
-        else
-        {
-            if (cctvPlayerDict.ContainsKey(soData))
-            {
-                cctvPlayerDict[soData].StopAndClose();
-                cctvPlayerDict.Remove(soData);
-            }
-        }
+        if (isOn) cctvPlayer.Play(soData);
     }
 
-    private void OnClickScaleButtonHandler(SO_CCTV soData)
+    public void PlayFullScreenCCTV(SO_CCTV soData)
     {
         fullScreenCCTVPlayer.soData = soData;
+        fullScreenCCTVPlayer.transform.parent.gameObject.SetActive(true);
         fullScreenCCTVPlayer.gameObject.SetActive(true);
     }
 
@@ -76,11 +62,5 @@ public class CCTV_UIManager : MonoBehaviour
         {
             Debug.Log($"關閉: {dataHandler.name}");
         }
-    }
-
-    [ContextMenu("Send Event")]
-    private void onClickClosePanelHandler()
-    {
-        dataHandler.IsSelected = false;
     }
 }

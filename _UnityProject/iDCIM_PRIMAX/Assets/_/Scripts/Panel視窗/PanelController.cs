@@ -38,7 +38,5 @@ public class PanelController : MonoBehaviour
     {
         txtTitle ??= transform.Find("txtTitle").GetComponent<TextMeshProUGUI>();
         txtTitle.SetText(titleText);
-
-        name = $"Panel視窗 - {titleText}";
     }
 }

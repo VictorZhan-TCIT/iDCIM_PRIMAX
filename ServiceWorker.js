@@ -1,4 +1,4 @@
-const cacheName = "TCIT-iDCIM_PRIMAX-0.1";
+const cacheName = "TCIT-iDCIM_PRIMAX_NoStream-0.1";
 const contentToCache = [
     "Build/iDCIM_PRIMAX.loader.js",
     "Build/iDCIM_PRIMAX.framework.js.unityweb",
