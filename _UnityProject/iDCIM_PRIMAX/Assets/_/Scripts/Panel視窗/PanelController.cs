@@ -36,7 +36,6 @@ public class PanelController : MonoBehaviour
     }
     private void OnValidate()
     {
-        txtTitle ??= transform.Find("txtTitle").GetComponent<TextMeshProUGUI>();
-        txtTitle.SetText(titleText);
+        if (txtTitle != null) txtTitle.SetText(titleText);
     }
 }
