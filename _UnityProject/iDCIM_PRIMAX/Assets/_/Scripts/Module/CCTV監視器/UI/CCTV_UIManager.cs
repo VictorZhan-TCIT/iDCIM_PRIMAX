@@ -81,7 +81,7 @@ public class CCTV_UIManager : MonoBehaviour
 
     public void PlayFullScreenCCTV(SO_CCTV soData)
     {
-        playerDictionary.Values.ToList().ForEach(player => player.Pause());
+      //  playerDictionary.Values.ToList().ForEach(player => player.Pause());
 
         fullScreenCCTVPlayer.soData = soData;
         fullScreenCCTVPlayer.transform.parent.gameObject.SetActive(true);

@@ -8,7 +8,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/_/Scenes/Main.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 1
+  - enabled: 0
     path: Assets/_/Scenes/Play RTSP.unity
     guid: 4629ee2fa8c27174cb6802ef658e3ea5
   - enabled: 0
