@@ -42,15 +42,16 @@ namespace VictorDev.Async.CoroutineUtils
         /// <summary>
         /// 執行Coroutine
         /// </summary>
-        public static IEnumerator RunCoroutine(IEnumerator coroutine)
+        public static IEnumerator RunCoroutine(IEnumerator iEnumerator)
         {
-            Instance.StartCoroutine(coroutine);
-            return coroutine;
+            Instance.StartCoroutine(iEnumerator);
+            return iEnumerator;
         }
+
 
         /// <summary>
         /// 取消Coroutine
         /// </summary>
-        public static void CancellCoroutine(IEnumerator coroutine) => Instance.StopCoroutine(coroutine);
+        public static void CancellCoroutine(IEnumerator iEnumerator) => Instance.StopCoroutine(iEnumerator);
     }
 }

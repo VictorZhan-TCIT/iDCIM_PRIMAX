@@ -53,9 +53,9 @@ namespace VictorDev.Managers
             outlines.Add(outline);
 
             ClickableObject clickableObject = target.AddComponent<ClickableObject>();
-            clickableObject.OnMouseEnterEvent += (target) => OnMouseEnterEvent(outline);
-            clickableObject.OnMouseExitEvent += (target) => OnMouseExitEvent(outline);
-            clickableObject.OnMouseClickEvent += (target) => OnMouseClick(outline);
+            clickableObject.OnMouseEnterEvent.AddListener( (target) => OnMouseEnterEvent(outline));
+            clickableObject.OnMouseExitEvent.AddListener((target) => OnMouseExitEvent(outline));
+            clickableObject.OnMouseClickEvent.AddListener((target) => OnMouseClick(outline));
 
             AddMoreComponentToObject(target);
         }

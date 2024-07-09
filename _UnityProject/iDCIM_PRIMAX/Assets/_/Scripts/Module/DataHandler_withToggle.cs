@@ -23,7 +23,7 @@ public abstract class DataHandler_withToggle<Indicator, SO> : DataHandler<Indica
     /// </summary>
     public void InitListener()
     {
-        GetComponent<ClickableObject>().OnMouseClickEvent += (targetTrans) => IsSelected = !IsSelected;
+        GetComponent<ClickableObject>().OnMouseClickEvent.AddListener( (targetTrans) => IsSelected = !IsSelected);
         indicator.onToggleChanged.AddListener(OnToggleChangedHandler);
     }
 
