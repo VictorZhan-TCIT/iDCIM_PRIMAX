@@ -21,6 +21,8 @@ namespace VictorDev.UI
 
         [SerializeField] protected Toggle toggle;
 
+        public bool isOn=>toggle.isOn;
+
         public ToggleGroup toggleGroup { set => toggle.group = value; }
 
         /// <summary>
@@ -40,13 +42,12 @@ namespace VictorDev.UI
         /// 當設定完SO資料之後
         /// <para>+ 要將子類別儲存於ScriptableObject內，以便後續接收到的類別可以對此項目進行操作</para>
         /// </summary>
-        protected abstract void OnSetSoData();
+        protected virtual void OnSetSoData() { }
 
         private void Awake()
         {
             toggle.onValueChanged.AddListener((isOn) => onToggleChanged?.Invoke(_soData, toggle.isOn));
         }
-
         protected virtual void OnValidate() => toggle ??= GetComponent<Toggle>();
     }
 }

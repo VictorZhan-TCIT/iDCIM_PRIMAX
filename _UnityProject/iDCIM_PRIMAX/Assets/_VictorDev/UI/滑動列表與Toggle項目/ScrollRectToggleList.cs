@@ -64,6 +64,7 @@ public abstract class ScrollRectToggleList<T, SO> : MonoBehaviour where T : Togg
     {
         T item = ObjectPoolManager.GetInstanceFromQueuePool<T>(prefabItem);
         item.transform.SetParent(scrollRect.content);
+        item.transform.localScale = Vector3.one;
         item.soData = soData;
 
         if (isInvokeWithOn)
@@ -77,9 +78,6 @@ public abstract class ScrollRectToggleList<T, SO> : MonoBehaviour where T : Togg
         {
             item.onToggleChanged.AddListener(onToggleChanged.Invoke);
         }
-
-
-
         OnCreateEachItem(item, soData);
     }
 
