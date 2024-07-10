@@ -17,11 +17,11 @@ namespace VictorDev.UI
         [SerializeField] private SO _soData;
 
         [Header(">>> 點選Toggle時發送SO與Toggle.isOn")]
-        public UnityEvent<SO, bool> onToggleChanged;
+        public UnityEvent<ToggleItem<SO>> onToggleChanged;
 
         [SerializeField] protected Toggle toggle;
 
-        public bool isOn=>toggle.isOn;
+        public bool isOn => toggle.isOn;
 
         public ToggleGroup toggleGroup { set => toggle.group = value; }
 
@@ -46,7 +46,7 @@ namespace VictorDev.UI
 
         private void Awake()
         {
-            toggle.onValueChanged.AddListener((isOn) => onToggleChanged?.Invoke(_soData, toggle.isOn));
+            toggle.onValueChanged.AddListener((isOn) => onToggleChanged?.Invoke(this));
         }
         protected virtual void OnValidate() => toggle ??= GetComponent<Toggle>();
     }

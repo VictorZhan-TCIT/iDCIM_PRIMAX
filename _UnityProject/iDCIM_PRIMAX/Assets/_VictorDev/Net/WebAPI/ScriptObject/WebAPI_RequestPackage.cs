@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace VictorDev.Net.WebAPI
@@ -20,6 +21,23 @@ namespace VictorDev.Net.WebAPI
 
         [Header(">>> GET方法之後的變數 (選填)")]
         public string urlGetVariables;
+
+        [Header(">>> formData (選填，POST使用)")]
+        public List<FormDataRow> formDataRow;
+
+        private WWWForm _formData;
+        public WWWForm formData
+        {
+            get
+            {
+                if (_formData == null)
+                {
+                    _formData = new WWWForm();
+                    formDataRow.ForEach((dataRow) => _formData.AddField(dataRow.key, dataRow.value));
+                }
+                return _formData;
+            }
+        }
 
         [Space(20)]
 
@@ -55,6 +73,12 @@ namespace VictorDev.Net.WebAPI
         }
         public string token => accessToken.token.Trim();
         public string json => jsonString.json.Trim();
+    }
+
+    [Serializable]
+    public class FormDataRow
+    {
+        public string key, value;
     }
 
     public enum RequestMethod

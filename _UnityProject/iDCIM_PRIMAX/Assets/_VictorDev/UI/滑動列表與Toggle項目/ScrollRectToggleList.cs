@@ -69,15 +69,15 @@ public abstract class ScrollRectToggleList<T, SO> : MonoBehaviour where T : Togg
 
         if (isInvokeWithOn)
         {
-            item.onToggleChanged.AddListener((soData, isOn) =>
+            // target為父類別實例
+            item.onToggleChanged.AddListener((target) =>
             {
-                if (isOn) onToggleChanged.Invoke(item);
-              //  if (isOn) onToggleChanged.Invoke(soData, isOn);
+                if (target.isOn) onToggleChanged.Invoke(item);
             });
         }
         else
         {
-            item.onToggleChanged.AddListener(onToggleChanged.Invoke);
+            item.onToggleChanged.AddListener((target) => onToggleChanged.Invoke(item));
         }
         OnCreateEachItem(item, soData);
     }

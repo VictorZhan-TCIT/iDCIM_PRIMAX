@@ -27,7 +27,7 @@ public class CCTV_UIManager : MonoBehaviour
     [SerializeField] private Transform playersContainer;
 
     [Header(">>> 當列表項目Toggle變化時Invoke")]
-    public UnityEvent<SO_CCTV, bool> onToggleChanged;
+    public UnityEvent<CCTVListItem> onToggleChanged;
 
     private CCTV_DataHandler dataHandler;
 
@@ -53,16 +53,16 @@ public class CCTV_UIManager : MonoBehaviour
     /// <summary>
     /// 點選清單上項目時
     /// </summary>
-    private void onToggleChangedHandler(SO_CCTV soData, bool isOn)
+    private void onToggleChangedHandler(CCTVListItem listItem)
     {
-        if (playerDictionary.ContainsKey(soData))
+        if (playerDictionary.ContainsKey(listItem.soData))
         {
-            if (isOn == false) playerDictionary[soData].StopAndClose();
-            playerDictionary.Remove(soData);
+            if (listItem.isOn == false) playerDictionary[listItem.soData].StopAndClose();
+            playerDictionary.Remove(listItem.soData);
         }
         else
         {
-            StartCoroutine(CreatePlayer(soData));
+            StartCoroutine(CreatePlayer(listItem.soData));
         }
     }
 

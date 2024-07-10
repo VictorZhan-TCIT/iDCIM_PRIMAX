@@ -8,9 +8,9 @@ public class DeviceList : ScrollRectToggleList<DeviceListItem, SO_Device>
 
     private void Awake()
     {
-        this.onToggleChanged.AddListener((soData, isOn) =>
+        this.onToggleChanged.AddListener((toggleItem) =>
         {
-            Debug.Log($"soData: {soData.DeviceName} / isOn:{isOn}");
+            Debug.Log($"soData: {toggleItem.soData.DeviceName} / isOn:{toggleItem.isOn}");
         });
     }
 
