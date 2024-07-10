@@ -5,28 +5,28 @@ using VictorDev.Async.CoroutineUtils;
 using VictorDev.Common;
 
 /// <summary>
-///  ³]³Æ¼Ò«¬ (DCR¡BDCS¡BDCN¡BDCE¡BDCP)
+///  è¨­å‚™æ¨¡å‹ (DCRã€DCSã€DCNã€DCEã€DCP)
 /// </summary>
 [RequireComponent(typeof(ClickableObject))]
 [RequireComponent(typeof(LerpEmission))]
 public class DeviceModel : MonoBehaviour
 {
-    [Header(">>> ¬O§_³QÂI¿ï")]
+    [Header(">>> æ˜¯å¦è¢«é»é¸")]
     [SerializeField] private bool _isSelected;
 
-    [Header(">>> ³]³Æ¸ê°T")]
+    [Header(">>> è¨­å‚™è³‡è¨Š")]
     [SerializeField] private SO_Device soData;
     public SO_Device soDataInfo => soData;
 
-    [Header(">>> ·í³QÂIÀ»¦Ó§ïÅÜToggleª¬ºA®É")]
+    [Header(">>> ç•¶è¢«é»æ“Šè€Œæ”¹è®ŠToggleç‹€æ…‹æ™‚")]
     public UnityEvent<DeviceModel> onSelectChanged;
 
-    [Header(">>> ²Õ¥ó")]
+    [Header(">>> çµ„ä»¶")]
     [SerializeField] private ClickableObject clickableObject;
     [SerializeField] private LerpEmission lerpEmission;
 
     /// <summary>
-    /// ¥Ø«e¬O§_¬°³QÂI¿ïª¬ºA
+    /// ç›®å‰æ˜¯å¦ç‚ºè¢«é»é¸ç‹€æ…‹
     /// </summary>
     public bool isSelected
     {

@@ -16,7 +16,6 @@ public class DeviceList : ScrollRectToggleList<DeviceListItem, SO_Device>
 
     protected override void OnCreateEachItem(DeviceListItem item, SO_Device soData)
     {
-        base.OnCreateEachItem(item, soData);
         item.toggleGroup = toggleGroup;
     }
 

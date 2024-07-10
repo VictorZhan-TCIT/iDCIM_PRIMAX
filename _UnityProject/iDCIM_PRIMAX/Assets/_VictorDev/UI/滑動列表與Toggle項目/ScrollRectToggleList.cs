@@ -18,7 +18,7 @@ public abstract class ScrollRectToggleList<T, SO> : MonoBehaviour where T : Togg
     /// 當列表項目被點擊時發送事件
     /// </summary>
     [Header(">>> 當列表項目被點擊時發送事件")]
-    public UnityEvent<SO, bool> onToggleChanged;
+    public UnityEvent<T> onToggleChanged;
 
     [Header(">>> 僅在Toggle On時才發送事件")]
     [SerializeField] private bool isInvokeWithOn = false;
@@ -71,7 +71,8 @@ public abstract class ScrollRectToggleList<T, SO> : MonoBehaviour where T : Togg
         {
             item.onToggleChanged.AddListener((soData, isOn) =>
             {
-                if (isOn) onToggleChanged.Invoke(soData, isOn);
+                if (isOn) onToggleChanged.Invoke(item);
+              //  if (isOn) onToggleChanged.Invoke(soData, isOn);
             });
         }
         else
