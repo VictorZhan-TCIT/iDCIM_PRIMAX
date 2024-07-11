@@ -4,7 +4,7 @@ using VictorDev.Net.WebAPI;
 
 public class WebAPIManager : MonoBehaviour
 {
-    [SerializeField] private WebAPI_RequestPackage requestLoing;
+    [SerializeField] private WebAPI_Request requestLoing;
 
     [ContextMenu(" - 帳密登入")]
     void Login()

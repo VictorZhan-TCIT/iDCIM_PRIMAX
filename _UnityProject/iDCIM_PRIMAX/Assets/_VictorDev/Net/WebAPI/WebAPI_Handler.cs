@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using UnityEngine;
 using UnityEngine.Networking;
 using VictorDev.Async.CoroutineUtils;
 using VictorDev.Parser;
@@ -21,7 +20,7 @@ namespace VictorDev.Net.WebAPI
         /// <param name="onSuccess">成功，回傳Dictionary<欄位名，值></param>
         /// <param name="onFailed">失敗，回傳錯誤訊息</param>
         public static IEnumerator CallWebAPI(string url, Action<long, Dictionary<string, string>> onSuccess, Action<long, string> onFailed = null)
-             => CallWebAPI(new WebAPI_RequestPackage(url), onSuccess, onFailed);
+             => CallWebAPI(new WebAPI_Request(url), onSuccess, onFailed);
 
         /// <summary>
         /// 呼叫WebAPI(用RequestPackage) (單一JSON資料)
@@ -29,7 +28,7 @@ namespace VictorDev.Net.WebAPI
         /// <param name="url">網址</param>
         /// <param name="onSuccess">成功，回傳Dictionary<欄位名，值></param>
         /// <param name="onFailed">失敗，回傳錯誤訊息</param>
-        public static IEnumerator CallWebAPI(WebAPI_RequestPackage requestPackage, Action<long, Dictionary<string, string>> onSuccess, Action<long, string> onFailed = null)
+        public static IEnumerator CallWebAPI(WebAPI_Request requestPackage, Action<long, Dictionary<string, string>> onSuccess, Action<long, string> onFailed = null)
              => CoroutineHandler.RunCoroutine(SendRequestCoroutine(requestPackage, onSuccess, onFailed));
 
         /// <summary>
@@ -39,7 +38,7 @@ namespace VictorDev.Net.WebAPI
         /// <param name="onSuccess">成功，回傳Dictionary<欄位名，值></param>
         /// <param name="onFailed">失敗，回傳錯誤訊息</param>
         public static IEnumerator CallWebAPI(string url, Action<long, List<Dictionary<string, string>>> onSuccess, Action<long, string> onFailed = null)
-             => CallWebAPI(new WebAPI_RequestPackage(url), onSuccess, onFailed);
+             => CallWebAPI(new WebAPI_Request(url), onSuccess, onFailed);
 
         /// <summary>
         /// 呼叫WebAPI(用RequestPackage) (陣列JSON資料)
@@ -47,13 +46,13 @@ namespace VictorDev.Net.WebAPI
         /// <param name="url">網址</param>
         /// <param name="onSuccess">成功，回傳Dictionary<欄位名，值></param>
         /// <param name="onFailed">失敗，回傳錯誤訊息</param>
-        public static IEnumerator CallWebAPI(WebAPI_RequestPackage requestPackage, Action<long, List<Dictionary<string, string>>> onSuccess, Action<long, string> onFailed = null)
+        public static IEnumerator CallWebAPI(WebAPI_Request requestPackage, Action<long, List<Dictionary<string, string>>> onSuccess, Action<long, string> onFailed = null)
              => CoroutineHandler.RunCoroutine(SendRequestCoroutine(requestPackage, onSuccess, onFailed));
 
         /// <summary>
         /// ★ 發送請求 (回傳：單一JSON值)
         /// </summary>
-        private static IEnumerator SendRequestCoroutine(WebAPI_RequestPackage requestPackage, Action<long, Dictionary<string, string>> onSuccess, Action<long, string> onFailed)
+        private static IEnumerator SendRequestCoroutine(WebAPI_Request requestPackage, Action<long, Dictionary<string, string>> onSuccess, Action<long, string> onFailed)
         {
             switch (requestPackage.method)
             {
@@ -70,6 +69,13 @@ namespace VictorDev.Net.WebAPI
                     break;
                 case RequestMethod.POST:
                     using (UnityWebRequest request = new UnityWebRequest(requestPackage.url, "POST"))
+
+                    /*   WWWForm form = new WWWForm();
+                       form.AddField("BuildingCode", "TPE");
+                       form.AddField("DeviceCode", "HWACOM/TPE/IDC/FL1/DCR/Schneider-ER8222搭電源/Rack1");*/
+
+                    //   using (UnityWebRequest request = UnityWebRequest.Post(requestPackage.url, requestPackage.formData))
+                    //using (UnityWebRequest request = UnityWebRequest.Post(requestPackage.url, form))
                     {
                         // 設定Request相關資訊
                         DownloadHandler downloadHandler = RequestSetting(requestPackage, request);
@@ -80,22 +86,11 @@ namespace VictorDev.Net.WebAPI
                     }
                     break;
             }
-
-/*
-            using (UnityWebRequest request = UnityWebRequest.Get(requestPackage.url))
-            {
-                // 設定Request相關資訊
-                DownloadHandler downloadHandler = RequestSetting(requestPackage, request);
-                // 發送請求
-                yield return request.SendWebRequest();
-                // 處理結果資訊
-                ResultHandler(onSuccess, onFailed, request, downloadHandler);
-            }*/
         }
         /// <summary>
         /// ★ 發送請求 (回傳：JSON值陣列)
         /// </summary>
-        private static IEnumerator SendRequestCoroutine(WebAPI_RequestPackage requestPackage, Action<long, List<Dictionary<string, string>>> onSuccess, Action<long, string> onFailed)
+        private static IEnumerator SendRequestCoroutine(WebAPI_Request requestPackage, Action<long, List<Dictionary<string, string>>> onSuccess, Action<long, string> onFailed)
         {
             switch (requestPackage.method)
             {
@@ -127,7 +122,7 @@ namespace VictorDev.Net.WebAPI
         /// <summary>
         /// 設定Request相關資訊
         /// </summary>
-        private static DownloadHandler RequestSetting(WebAPI_RequestPackage requestPackage, UnityWebRequest request)
+        private static DownloadHandler RequestSetting(WebAPI_Request requestPackage, UnityWebRequest request)
         {
             // 設定Header資訊
             request.SetRequestHeader("Content-Type", "application/json");
@@ -139,24 +134,20 @@ namespace VictorDev.Net.WebAPI
             DownloadHandler downloadHandler;
             if (requestPackage.method == RequestMethod.POST || requestPackage.method == RequestMethod.PUT)
             {
-                UploadHandler uploadHandler;
-                
-                if (string.IsNullOrEmpty(requestPackage.json) == false)
+
+                if (string.IsNullOrEmpty(requestPackage.BodyJSON) == false)
                 {
-                    byte[] bytes = Encoding.UTF8.GetBytes(requestPackage.json);
+
+                    UploadHandler uploadHandler;
+                    byte[] bytes = Encoding.UTF8.GetBytes(requestPackage.BodyJSON);
                     uploadHandler = new UploadHandlerRaw(bytes)
 
                     {
                         contentType = "application/json"
                     };
-                }
-                else
-                {
-                    uploadHandler = new UploadHandlerRaw(requestPackage.formData.data);
-                    uploadHandler.contentType = requestPackage.formData.headers["Content-Type"];
-                }
 
-                request.uploadHandler = uploadHandler;
+                    request.uploadHandler = uploadHandler;
+                }
             }
             downloadHandler = new DownloadHandlerBuffer();
             request.downloadHandler = downloadHandler;

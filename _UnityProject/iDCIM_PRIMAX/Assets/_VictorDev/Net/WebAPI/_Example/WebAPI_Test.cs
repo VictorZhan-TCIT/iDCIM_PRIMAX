@@ -6,7 +6,7 @@ using Debug = VictorDev.Common.DebugHandler;
 
 public class WebAPI_Test : MonoBehaviour
 {
-    [SerializeField] private List<WebAPI_RequestPackage> requestList;
+    [SerializeField] private List<WebAPI_Request> requestList;
 
     private void Start()
     {
