@@ -27,6 +27,6 @@ MonoBehaviour:
       value: "HWACOM/TPE/IDC/FL1/DCR/Schneider-ER8222\u642D\u96FB\u6E90/Rack1"
   body:
     isActivated: 0
-    bodyType: 0
+    _bodyType: 0
     fieldList: []
     _rawString: 

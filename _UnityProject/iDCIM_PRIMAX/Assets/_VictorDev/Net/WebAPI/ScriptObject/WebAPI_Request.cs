@@ -6,13 +6,44 @@ using VictorDev.Common;
 namespace VictorDev.Net.WebAPI
 {
     /// <summary>
-    /// 呼叫WebAPI的封包格式(ScriptableObject)
+    /// 呼叫WebAPI的Request參數設定
     /// </summary>
-    [CreateAssetMenu(fileName = "WebAPI_Request", menuName = ">>VictorDev<</Net/WebAPI/WebAPI_Request - 網路請求設定")]
+    [CreateAssetMenu(fileName = "WebAPI Request設定", menuName = ">>VictorDev<</Net/WebAPI/WebAPI Request設定")]
     public class WebAPI_Request : ScriptableObject
     {
-        public RequestMethod method;
-        public Authorization authorization;
+        [SerializeField] private enumRequestMethod method;
+        public enumRequestMethod requestMethod => method;
+
+        [SerializeField] private Authorization authorization;
+        public enumAuthorization authorizationType => authorization.authorizationType;
+        public string token
+        {
+            get => authorization.token.Trim();
+            set => authorization.token = value;
+        }
+
+        [Header(">>> 回應傳資料的型態")]
+        [SerializeField] private enumResponseDataType responseDataType;
+        private Dictionary<enumResponseDataType, string> contentTypeTable { get; set; }
+        /// <summary>
+        /// 回應資料的型態
+        /// </summary>
+        public string contentType
+        {
+            get
+            {
+                if (contentTypeTable == null)
+                {
+                    contentTypeTable = new Dictionary<enumResponseDataType, string>()
+                    {
+                        { enumResponseDataType.Default, "application/x-www-form-urlencoded" },
+                        { enumResponseDataType.JSON, "application/json" },
+                        { enumResponseDataType.Text, "text/plain" },
+                    };
+                }
+                return contentTypeTable[responseDataType];
+            }
+        }
 
         [Header(">>> 設定WebAPI的IP與PORT (選填)")]
         [SerializeField] private WebAPI_IPConfig ipConfig;
@@ -20,67 +51,22 @@ namespace VictorDev.Net.WebAPI
         /// <summary>
         /// 設定WebAPI的IP與PORT (可選)
         /// </summary>
+        [TextArea(1, 3)]
         [Header(">>> WebAP完整路徑 / WebAPI IP之後的路徑")]
-        [TextArea(1, 3)][SerializeField] private string apiURL;
-
+        [SerializeField] private string apiURL;
         [Header(">>> Params設定")]
         [SerializeField] private QueryParams queryParams;
+
         [Header(">>> Body設定")]
         [SerializeField] private Body body;
-
-        [ContextMenu("- Console Log: Request設定資料")]
-        private void LogRequestInfo()
-        {
-            Debug.Log($">>> [{method}] URL: {url}");
-
-            if (queryParams.IsActivated)
-            {
-                Debug.Log($"\t\tqueryString: {queryParams.queryString}");
-            }
-
-            if (body.IsActivated)
-            {
-                switch (body.bodyType)
-                {
-                    case enumBody.formData:
-                        Debug.Log($"\t\tWWWForm binary長度: {body.formData.data.Length}");
-                        break;
-                }
-            }
-        }
+        public enumBody bodyType => body.bodyType;
+        public WWWForm formData => body.formData;
+        public string BodyJSON => body.rawString;
 
 
-
-        /* [Space(100)]
-         [Header(">>> GET方法之後的變數 (選填)")]
-         public string urlGetVariables;
-
-         [Header(">>> formData (選填，POST使用)")]
-         public KeyValueItem[] formDataRow;
-
-         private WWWForm _formData;
-         public WWWForm formData
-         {
-             get
-             {
-                 if (_formData == null)
-                 {
-                     _formData = new WWWForm();
-                     formDataRow.ForEach((dataRow) => _formData.AddField(dataRow.key.Trim(), dataRow.value.Trim()));
-                 }
-                 return _formData;
-             }
-         }
-
-         [Space(20)]
-
-
-
-         [SerializeField] private AccessToken accessToken;
-         [SerializeField] private JsonString jsonString;*/
         public WebAPI_Request(string url) => this.apiURL = url;
 
-        private UriBuilder uriBuilder;
+        private UriBuilder uriBuilder { get; set; }
 
         /// <summary>
         /// 完整WebAPI網址
@@ -106,22 +92,38 @@ namespace VictorDev.Net.WebAPI
             }
         }
 
-        /// <summary>
-        /// 外部需檢查Body類型，才能判定Request需要傳遞什麼資料
-        /// </summary>
-        public enumBody bodyType => body.bodyType;
-        public WWWForm formData => body.formData;
-
-        /// <summary>
-        /// Authorization的Token值
-        /// </summary>
-        public string token
+        [ContextMenu("- 列出Request參數資料")]
+        private void LogRequestInfo()
         {
-            get => authorization.token.Trim();
-            set => authorization.token = value;
-        }
-        public string BodyJSON => (body.bodyType == enumBody.rawJSON) ? body.rawString : "empty";
+            Debug.Log($">>> [{requestMethod}] URL: {url}");
 
+            if (queryParams.IsActivated)
+            {
+                Debug.Log($"\t\tqueryString: {queryParams.queryString}");
+            }
+
+            if (body.IsActivated)
+            {
+                switch (body.bodyType)
+                {
+                    case enumBody.formData:
+                        Debug.Log($"\t\tWWWForm binary長度: {body.formData.data.Length}");
+                        break;
+                }
+            }
+        }
+
+        #region [ >>> Authorization參數設定 ]
+        [Serializable]
+        private class Authorization
+        {
+            public enumAuthorization authorizationType = enumAuthorization.Bearer;
+            [TextArea(1, 5)]
+            public string token;
+        }
+        #endregion
+
+        #region [ >>> Params參數設定 ]
         [Serializable]
         public class QueryParams
         {
@@ -135,7 +137,7 @@ namespace VictorDev.Net.WebAPI
                 get
                 {
                     string resultString = "";
-                    if (fieldList.Count > 0)
+                    if (fieldList.Count > 0 && isActivated)
                     {
                         resultString = "?";
                         fieldList.ForEach(item =>
@@ -160,18 +162,22 @@ namespace VictorDev.Net.WebAPI
                 }
             }
         }
+        #endregion
 
+        #region [ >>> Body參數設定 ]
         [Serializable]
         private class Body
         {
             [SerializeField] private bool isActivated = false;
-            public enumBody bodyType;
+            [SerializeField] private enumBody _bodyType;
             [Header(">>>供form-data型態使用")]
             [SerializeField] private List<KeyValueItem> fieldList;
             [Header(">>>供raw型態: JSON、TEXT使用")]
             [SerializeField] private string _rawString;
 
             public bool IsActivated => isActivated;
+
+            public enumBody bodyType => (isActivated) ? _bodyType : enumBody.none;
 
             /// <summary>
             /// form-data型態的參數值
@@ -185,7 +191,7 @@ namespace VictorDev.Net.WebAPI
                     WWWForm result = new WWWForm();
                     fieldList.ForEach(item =>
                     {
-                        Debug.Log($"\t\tform-data Field: {item.key.Trim()} / {item.value.Trim()}");
+                        Debug.Log($"\t[form-data] {item.key.Trim()} = {item.value.Trim()}");
                         result.AddField(item.key.Trim(), item.value.Trim());
                     });
                     return result;
@@ -198,7 +204,7 @@ namespace VictorDev.Net.WebAPI
                 get
                 {
                     //待優化處理
-                    return rawString;
+                    return (bodyType == enumBody.rawJSON) ? _rawString : "empty"; ;
                 }
             }
 
@@ -214,7 +220,7 @@ namespace VictorDev.Net.WebAPI
                 }
             }
         }
-
+        #endregion
 
         [Serializable]
         public class KeyValueItem
@@ -229,36 +235,12 @@ namespace VictorDev.Net.WebAPI
         }
     }
 
-    public enum RequestMethod { GET, HEAD, POST, PUT, CREATE, DELETE }
+    public enum enumRequestMethod { GET, HEAD, POST, PUT, CREATE, DELETE }
+    public enum enumAuthorization { NoAuth, Bearer }
     public enum enumBody { none, formData, rawJSON, rawText, binary }
-
-    [Serializable]
-    public class Authorization
-    {
-        public AuthorizationType authorizationType = AuthorizationType.Bearer;
-        [TextArea(1, 5)]
-        public string token;
-    }
-
-
-
-
-
-    [Serializable]
-    public struct AccessToken
-    {
-        [TextArea(1, 5)] public string token;
-    }
-
-    [Serializable]
-    public struct JsonString
-    {
-        [TextArea(1, 100)] public string json;
-    }
-
-    public enum AuthorizationType
-    {
-        NoAuth, Bearer
-    }
+    /// <summary>
+    /// 預設值為application/x-www-form-urlencoded
+    /// </summary>
+    public enum enumResponseDataType { Default, JSON, Text }
 
 }

@@ -23,7 +23,7 @@ MonoBehaviour:
     fieldList: []
   body:
     isActivated: 1
-    bodyType: 1
+    _bodyType: 1
     fieldList:
     - key: deviceId
       value: "HWACOM+TPE+IDC+FL1+1+DCR++Rack: Schneider-ER8222\u642D\u96FB\u6E90+3"

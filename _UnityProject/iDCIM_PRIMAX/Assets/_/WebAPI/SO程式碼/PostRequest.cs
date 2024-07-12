@@ -20,23 +20,18 @@ public class PostRequest : MonoBehaviour
     IEnumerator PostData()
     {
 
-        /*
+
         WWWForm form = new WWWForm();
         form.AddField("account", account);
-        form.AddField("pw", password);*/
+        form.AddField("pw", password);
 
-        // UnityWebRequest www = UnityWebRequest.Post(url, form);
-
-        url = "http://220.135.33.221:5053/api/Eqpt/RackContain?BuildingCode=TPE&DeviceCode=HWACOM/TPE/IDC/FL1/DCR/Schneider-ER8222搭電源/Rack1";
-        UnityWebRequest www = new UnityWebRequest(url, "POST");
-
-        www.SetRequestHeader("Authorization", "Bearer " + token);
+        UnityWebRequest www = UnityWebRequest.Post(url, form);
 
         // Print form data to debug
-        //Debug.Log("Sending form data: account=" + account + ", pw=" + password);
+        Debug.Log("Sending form data: account=" + account + ", pw=" + password);
 
-        www.uploadHandler = new UploadHandlerRaw(new byte[0]);
-        www.downloadHandler = new DownloadHandlerBuffer();
+  /*      www.uploadHandler = new UploadHandlerRaw(new byte[0]);
+        www.downloadHandler = new DownloadHandlerBuffer();*/
 
         yield return www.SendWebRequest();
 

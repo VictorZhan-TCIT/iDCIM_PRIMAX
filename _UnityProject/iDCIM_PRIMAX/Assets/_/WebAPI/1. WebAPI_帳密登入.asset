@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   method: 2
   authorization:
-    authorizationType: 1
+    authorizationType: 0
     token: 
+  responseDataType: 0
   ipConfig: {fileID: 11400000, guid: 95eaffd286cbd604c91c7c0adae639ae, type: 2}
   apiURL: api/Auth/Login
   queryParams:
@@ -23,7 +24,7 @@ MonoBehaviour:
     fieldList: []
   body:
     isActivated: 1
-    bodyType: 1
+    _bodyType: 1
     fieldList:
     - key: account
       value: TCIT2024

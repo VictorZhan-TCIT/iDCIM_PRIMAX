@@ -12,7 +12,7 @@ public class WebAPI_Test : MonoBehaviour
     {
         requestList.ForEach(request =>
         {
-            WebAPI_Handler.CallWebAPI(request, OnSuccess, OnFailed);
+            WebAPI_Caller.CallWebAPI(request, OnSuccess, OnFailed);
         });
     }
 

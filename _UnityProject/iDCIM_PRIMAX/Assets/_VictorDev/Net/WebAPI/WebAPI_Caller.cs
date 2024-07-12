@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 using UnityEngine.Networking;
 using VictorDev.Async.CoroutineUtils;
 using VictorDev.Parser;
@@ -11,8 +12,135 @@ namespace VictorDev.Net.WebAPI
     /// <summary>
     /// WebAPI呼叫 (以Coroutine方式呼叫)
     /// </summary>
-    public abstract class WebAPI_Handler
+    public abstract class WebAPI_Caller
     {
+        /// <summary>
+        /// 呼叫WebAPI(用URL，預設RequestPacakge) (單一JSON資料)
+        /// <para>+ 泛型 [T] request種類: string / WebAPI_Request</para>
+        /// <para>+ onSuccess: 回傳原始資料string</para>
+        /// </summary>
+        public static void SendRequest<T>(T requestInput, Action<long, string> onSuccess, Action<long, string> onFailed = null) where T : class
+        {
+            //處理泛型進行轉換
+            WebAPI_Request request = null;
+            if (requestInput is string url) request = new WebAPI_Request(url);
+            else if (requestInput is WebAPI_Request req) request = req;
+
+            onFailed ??= (responseCode, msg) =>
+            {
+                Debug.Log($"[{responseCode}] onFailed: {msg} / {request.name}");
+            };
+
+            if (request != null) CoroutineHandler.RunCoroutine(SendWebRequestCoroutine(request, onSuccess, onFailed));
+            else Debug.LogWarning($"Type of WebAPI Request is Error!");
+        }
+        /// <summary>
+        /// 發送WebRequest
+        /// </summary>
+        private static IEnumerator SendWebRequestCoroutine(WebAPI_Request request, Action<long, string> onSuccess, Action<long, string> onFailed)
+        {
+            Debug.Log($"\t[Method] {request.requestMethod}");
+            switch (request.requestMethod)
+            {
+                case enumRequestMethod.GET:
+                    using (UnityWebRequest webRequest = UnityWebRequest.Get(request.url))
+                    {
+                        RequestSettingHandler(request, webRequest);
+                        // 發送請求
+                        yield return webRequest.SendWebRequest();
+                        // 處理結果資訊
+                        RequestResponseHandler(webRequest, onSuccess, onFailed);
+                    }
+                    break;
+                case enumRequestMethod.POST:
+                    switch (request.bodyType)
+                    {
+                        case enumBody.none:
+                            using (UnityWebRequest webRequest = new UnityWebRequest(request.url, "POST"))
+                            {
+                                RequestSettingHandler(request, webRequest);
+                                // 發送請求
+                                yield return webRequest.SendWebRequest();
+                                // 處理結果資訊
+                                RequestResponseHandler(webRequest, onSuccess, onFailed);
+                            }
+                            break;
+                        case enumBody.formData:
+                            using (UnityWebRequest webRequest = UnityWebRequest.Post(request.url, request.formData))
+                            {
+                                RequestSettingHandler(request, webRequest);
+                                // 發送請求
+                                yield return webRequest.SendWebRequest();
+                                // 處理結果資訊
+                                RequestResponseHandler(webRequest, onSuccess, onFailed);
+                                break;
+                            }
+                    }
+                    break;
+            }
+        }
+        /// <summary>
+        /// 設定Request各項參數
+        /// </summary>
+        private static void RequestSettingHandler(WebAPI_Request request, UnityWebRequest webRequest)
+        {
+            // 設定回應資料型態參數(Header)
+            webRequest.SetRequestHeader("Content-Type", request.contentType);
+            Debug.Log($"\t[Content-Type] {request.contentType}");
+
+            //設定Authorization參數
+            if (request.authorizationType != enumAuthorization.NoAuth)
+            {
+                webRequest.SetRequestHeader("Authorization", $"{request.authorizationType} {request.token}");
+                Debug.Log($"\t[Authorization: {request.authorizationType}] Token: {request.token}");
+            }
+
+            DownloadHandler downloadHandler;
+            if (request.requestMethod == enumRequestMethod.POST || request.requestMethod == enumRequestMethod.PUT)
+            {
+
+                switch (request.bodyType)
+                {
+                    case enumBody.formData:
+                        break;
+                }
+                /*   if (string.IsNullOrEmpty(requestPackage.BodyJSON) == false)
+                   {
+
+                       UploadHandler uploadHandler;
+                       byte[] bytes = Encoding.UTF8.GetBytes(requestPackage.BodyJSON);
+                       uploadHandler = new UploadHandlerRaw(bytes)
+
+                       {
+                           contentType = "application/json"
+                       };
+
+                       request.uploadHandler = uploadHandler;
+                   }*/
+            }
+            downloadHandler = new DownloadHandlerBuffer();
+            webRequest.downloadHandler = downloadHandler;
+        }
+
+        /// <summary>
+        /// WebAPI回應Request後的處理
+        /// </summary>
+        private static void RequestResponseHandler(UnityWebRequest webRequest, Action<long, string> onSuccess, Action<long, string> onFailed)
+        {
+            if (webRequest.result == UnityWebRequest.Result.ConnectionError
+               || webRequest.result == UnityWebRequest.Result.ProtocolError)
+            {
+                //失敗
+                onFailed?.Invoke(webRequest.responseCode, webRequest.error);
+            }
+            else
+            {
+                //將原始資料Invoke，不進行JSON解析
+                onSuccess?.Invoke(webRequest.responseCode, webRequest.downloadHandler.text);
+            }
+        }
+
+
         /// <summary>
         /// 呼叫WebAPI(用URL，預設RequestPacakge) (單一JSON資料)
         /// </summary>
@@ -54,9 +182,9 @@ namespace VictorDev.Net.WebAPI
         /// </summary>
         private static IEnumerator SendRequestCoroutine(WebAPI_Request requestPackage, Action<long, Dictionary<string, string>> onSuccess, Action<long, string> onFailed)
         {
-            switch (requestPackage.method)
+            switch (requestPackage.requestMethod)
             {
-                case RequestMethod.GET:
+                case enumRequestMethod.GET:
                     using (UnityWebRequest request = UnityWebRequest.Get(requestPackage.url))
                     {
                         // 設定Request相關資訊
@@ -67,7 +195,7 @@ namespace VictorDev.Net.WebAPI
                         ResultHandler(onSuccess, onFailed, request, downloadHandler);
                     }
                     break;
-                case RequestMethod.POST:
+                case enumRequestMethod.POST:
                     using (UnityWebRequest request = new UnityWebRequest(requestPackage.url, "POST"))
 
                     /*   WWWForm form = new WWWForm();
@@ -92,9 +220,9 @@ namespace VictorDev.Net.WebAPI
         /// </summary>
         private static IEnumerator SendRequestCoroutine(WebAPI_Request requestPackage, Action<long, List<Dictionary<string, string>>> onSuccess, Action<long, string> onFailed)
         {
-            switch (requestPackage.method)
+            switch (requestPackage.requestMethod)
             {
-                case RequestMethod.GET:
+                case enumRequestMethod.GET:
                     using (UnityWebRequest request = UnityWebRequest.Get(requestPackage.url))
                     {
                         // 設定Request相關資訊
@@ -105,7 +233,7 @@ namespace VictorDev.Net.WebAPI
                         ResultHandler(onSuccess, onFailed, request, downloadHandler);
                     }
                     break;
-                case RequestMethod.POST:
+                case enumRequestMethod.POST:
                     using (UnityWebRequest request = new UnityWebRequest(requestPackage.url, "POST"))
                     {
                         // 設定Request相關資訊
@@ -126,13 +254,13 @@ namespace VictorDev.Net.WebAPI
         {
             // 設定Header資訊
             request.SetRequestHeader("Content-Type", "application/json");
-            if (string.IsNullOrEmpty(requestPackage.token) == false)
+            if (requestPackage.authorizationType != enumAuthorization.NoAuth)
             {
-                request.SetRequestHeader("Authorization", $"{requestPackage.authorization} {requestPackage.token}");
+                request.SetRequestHeader("Authorization", $"{requestPackage.authorizationType} {requestPackage.token}");
             }
 
             DownloadHandler downloadHandler;
-            if (requestPackage.method == RequestMethod.POST || requestPackage.method == RequestMethod.PUT)
+            if (requestPackage.requestMethod == enumRequestMethod.POST || requestPackage.requestMethod == enumRequestMethod.PUT)
             {
 
                 if (string.IsNullOrEmpty(requestPackage.BodyJSON) == false)

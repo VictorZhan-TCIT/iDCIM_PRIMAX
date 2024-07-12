@@ -167,7 +167,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbae9d8e8281f26458d5566821bd6e0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  requestLoing: {fileID: 11400000, guid: e75572d3899223c468ef4b785072e348, type: 2}
+  request_SignIn: {fileID: 11400000, guid: 6d9527f9f2dc9464f8e1ba18359ba835, type: 2}
+  request_GetAllDCRInfo: {fileID: 11400000, guid: 8d62ec09f24358344b1f22c8da3eed61, type: 2}
 --- !u!1 &1090877950
 GameObject:
   m_ObjectHideFlags: 0
@@ -315,7 +316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cfb0a95cdd04be4eae93ace98c51fa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  url: "http://220.135.33.221:5053/api/Eqpt/RackContain?BuildingCode=TPE&DeviceCode=HWACOM/TPE/IDC/FL1/DCR/Schneider-ER8222\u642D\u96FB\u6E90/Rack1"
+  url: http://220.135.33.221:5048/api/Auth/Login
   account: TCIT2024
   password: TCIT2048@
   token: eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiVENJVDIwMjQiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJ0Y2l0IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9ncm91cHNpZCI6IlRQRSIsIklwQWRkcmVzcyI6IjE5Mi4xNjguMC4yNTQiLCJleHAiOjE3MjA3NDg0NDd9.dRa1U-0PpFTo-V8IcA653-gV8A5L9d-6wK1jIDTv5qP1XJ7tSzKSq9Ldls9AhpGHxIIVbLCfrj8OfPNprlwdDg
