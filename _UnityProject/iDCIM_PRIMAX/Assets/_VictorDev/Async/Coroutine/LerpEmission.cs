@@ -14,12 +14,14 @@ namespace VictorDev.Async.CoroutineUtils
         public Color colorSelected = Color.yellow;
         public float minIntensity = 0f;
         public float maxIntensity = 0.5f;
-        public float duration_Lerp = 0.5f;
+        public float duration_Lerp = 0.1f;
         public float duration_Loop = 3f;
 
         private Material material { get; set; }
 
         private IEnumerator iEnumerator { get; set; }
+
+        private Color currentColor { get; set; }
 
         private void Awake()
         {
@@ -35,6 +37,7 @@ namespace VictorDev.Async.CoroutineUtils
             // 启用Emission
             material.EnableKeyword("_EMISSION");
             material.SetColor("_EmissionColor", colorSelected);
+            currentColor = colorSelected;
 
             iEnumerator = LoopEmission();
             CoroutineHandler.RunCoroutine(iEnumerator);
@@ -63,6 +66,7 @@ namespace VictorDev.Async.CoroutineUtils
         {
             material.EnableKeyword("_EMISSION");
             material.SetColor("_EmissionColor", colorMouseOver);
+            currentColor = colorMouseOver;
             iEnumerator = CoroutineHandler.LerpValue(minIntensity, maxIntensity, SetColor, duration_Lerp);
         }
 
@@ -75,7 +79,7 @@ namespace VictorDev.Async.CoroutineUtils
 
         private void SetColor(float indensity)
         {
-            Color finalColor = colorMouseOver * Mathf.LinearToGammaSpace(indensity);
+            Color finalColor = currentColor * Mathf.LinearToGammaSpace(indensity);
             material.SetColor("_EmissionColor", finalColor);
         }
     }

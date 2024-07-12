@@ -7,7 +7,7 @@ namespace VictorDev.RevitUtils
     /// </summary>
     public abstract class RevitHandler
     {
-        public static string GetRevitObjectID(string value)
+        public static string GetRevit_elementId(string value)
         {
             // 创建正则表达式来匹配方括号内的内容
             Regex regex = new Regex(@"\[(.*?)\]");
@@ -18,6 +18,16 @@ namespace VictorDev.RevitUtils
             // 提取匹配到的内容，match.Groups[0] = "[值]"
             if (match.Success) return match.Groups[1].Value;
             else return null;
+        }
+
+        /// <summary>
+        /// 透過DCS設備的deviceId，取得其設備的高度U
+        /// </summary>
+        public static int GetHightUByDeviceID(string deviceId)
+        {
+            string pattern = @"(\d+)(?=[^\d]*$)";
+            Match match = Regex.Match(deviceId, pattern);
+            return (match.Success) ? int.Parse(match.Groups[1].Value) : -1;
         }
     }
 }
