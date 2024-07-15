@@ -6,7 +6,7 @@ public class DeviceModel_DCR : DeviceModel<SO_DCR>
 {
     public void CreateDeviceDCSfromDict(Dictionary<string, Transform> dcsPrefabDictionary)
     {
-        soData.DCS_List.ForEach(soDCS =>
+      /*  soData.DCS_List.ForEach(soDCS =>
         {
             string deviceType = RevitHandler.GetDCSTypeFromDeviceID(soDCS.deviceId);
 
@@ -23,7 +23,7 @@ public class DeviceModel_DCR : DeviceModel<SO_DCR>
                 dcs.transform.localRotation = Quaternion.Euler(0, 180, 0);
             }
             else Debug.Log($"沒有材質圖：{deviceType}");
-        });
+        });*/
     }
 
     internal void CreateDeviceDCSfromDict(Dictionary<string, Texture> dcsTextureDictionary, Transform prefab)

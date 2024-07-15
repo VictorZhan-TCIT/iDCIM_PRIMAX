@@ -23,12 +23,25 @@ namespace VictorDev.RevitUtils
         }
 
         /// <summary>
-        /// 透過DCS設備的deviceId，取得其設備的高度U
+        /// 透過DCS、DCN設備的deviceId，取得其設備的高度U
         /// </summary>
         public static int GetHightUFromDeviceID(string deviceId)
         {
-            string pattern = @"(\d+)(?=[^\d]*$)";
-            return int.Parse(RegHandler(deviceId, pattern));
+            string result = deviceId.Split(':')[0];
+            return int.Parse(result.Split('-')[1]);
+        }
+        /// <summary>
+        /// 透過DCS、DCN設備的deviceId，取得其設備的種類(DCS/DCN)
+        /// </summary>
+        public static string GetDeviceTypeFromDeviceID(string deviceId)
+        {
+            string[] types = { enumDeviceType.DCS.ToString(), enumDeviceType.DCN.ToString() };
+
+            foreach (string deviceType in types)
+            {
+                if (deviceId.Contains(deviceType)) return deviceType;
+            }
+            return "";
         }
 
         /// <summary>
@@ -76,11 +89,11 @@ namespace VictorDev.RevitUtils
                 result = ObjectPoolManager.GetInstanceFromQueuePool(prefab, container);
                 result.GetComponent<MeshRenderer>().material.mainTexture = dcsTextureDictionary[deviceType];
                 result.name = deviceType;
-                result.localScale = new Vector3(soDCS.width, soDCS.height - 0.5f, soDCS.length) * 0.01f;      // 高度-0.5f微調，避免重疊； 單位除100
+                result.localScale = new Vector3(soDCS.width - 13f, soDCS.height - 0.5f, soDCS.length) * 0.01f;      // 高度-0.5f微調，避免重疊； 單位除100
 
                 Vector3 pos = RevitHandler.GetPositionFromRackU(soDCS.rackLocation);
                 pos.y += result.localScale.y * 0.5f; //物件Pivot為中心點，所以再加上自身高度*0.5f
-                pos.z = -0.58f + result.localScale.z * 0.5f;      // 機櫃口座標0.58，減掉物件自身長度*0.5f
+                pos.z = -0.53f + result.localScale.z * 0.5f;      // 機櫃口座標0.58，減掉物件自身長度*0.5f
                 result.transform.localPosition = pos;
                 result.transform.localRotation = Quaternion.Euler(0, 180, 0);  //轉向
             }
@@ -89,3 +102,5 @@ namespace VictorDev.RevitUtils
         }
     }
 }
+
+public enum enumDeviceType { DCS, DCN }

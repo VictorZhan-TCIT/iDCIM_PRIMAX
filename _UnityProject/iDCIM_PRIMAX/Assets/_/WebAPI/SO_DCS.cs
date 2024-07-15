@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using VictorDev.Parser;
+using VictorDev.RevitUtils;
 
 /// <summary>
 /// [設備DCS] 伺服器主機
@@ -29,7 +30,15 @@ public class SO_DCS : ScriptableObject
     /// 高度(公分)
     /// </summary>
     public float height { get; private set; }
+    /// <summary>
+    /// 高度(RU)
+    /// </summary>
+    public float heightU => RevitHandler.GetHightUFromDeviceID(deviceId);
 
+    /// <summary>
+    /// DCS / DCN
+    /// </summary>
+    public string DeviceType => RevitHandler.GetDeviceTypeFromDeviceID(deviceId);
 
     private Dictionary<string, string> _sourceDataDict { get; set; }
     /// <summary>
@@ -49,3 +58,4 @@ public class SO_DCS : ScriptableObject
         }
     }
 }
+
