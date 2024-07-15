@@ -1,15 +1,24 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using VictorDev.Parser;
 
 public class DeviceManager : MonoBehaviour
 {
+    [SerializeField] private List<Transform> dcsPrefabList;
+    private Dictionary<string, Transform> dcsDictionary { get; set; } = new Dictionary<string, Transform>();
+
+    [SerializeField] private Transform dcsPrefab;
+    [SerializeField] private List<Texture> dcsTextureList;
+    private Dictionary<string, Texture> dcsTextureDictionary { get; set; } = new Dictionary<string, Texture>();
+
+
+
     [Header(">>> 場景上模型 - DCR")]
     [SerializeField] private List<DeviceModel_DCR> modelDCRList;
 
     [Header(">>> 從WebAPI取得的DCR列表")]
     [SerializeField] private List<SO_DCR> soDCRList;
-
 
     public Panel_DeviceInfo panel_DeviceInfo;
     public Panel_DCRInfo panel_DCRInfo;
@@ -44,13 +53,25 @@ public class DeviceManager : MonoBehaviour
 
     private void Awake()
     {
-        modelDCRList.ForEach(modelDCR =>
+        //設定DCS Prefab Dictionary
+        dcsPrefabList.ForEach(itemTrans =>
         {
-            modelDcrDict[modelDCR.elementId] = modelDCR;
-            modelDCR.onToggleChanged.AddListener((deviceModel) =>
+            dcsDictionary[itemTrans.name] = itemTrans;
+        });
+
+        dcsTextureList.ForEach(texture =>
+        {
+            dcsTextureDictionary[texture.name] = texture;
+        });
+
+        //設定DCS點擊後，傳遞soData給資訊面板 
+        modelDCRList.ForEach(deviceModelDCR =>
+        {
+            modelDcrDict[deviceModelDCR.elementId] = deviceModelDCR;
+            deviceModelDCR.onToggleChanged.AddListener((deviceModel) =>
             {
                 if (currentSelectedModel != null) currentSelectedModel.isSelected = false;
-                currentSelectedModel = modelDCR;
+                currentSelectedModel = deviceModelDCR;
 
                 panel_DeviceInfo.soDCR = currentSelectedModel.soData;
                 panel_DCRInfo.soDCR = currentSelectedModel.soData;
@@ -78,9 +99,15 @@ public class DeviceManager : MonoBehaviour
             soDCRList.Add(soDCR);
         });
 
+   /*     modelDcrDict[soDCRList[0].elementId].soData = soDCRList[0];
+        modelDcrDict[soDCRList[0].elementId].CreateDeviceDCSfromDict(dcsDictionary);
+        return;
+*/
         soDCRList.ForEach(soDCR =>
         {
             modelDcrDict[soDCR.elementId].soData = soDCR;
+            //modelDcrDict[soDCR.elementId].CreateDeviceDCSfromDict(dcsDictionary);
+            modelDcrDict[soDCR.elementId].CreateDeviceDCSfromDict(dcsTextureDictionary, dcsPrefab);
         });
     }
 }
