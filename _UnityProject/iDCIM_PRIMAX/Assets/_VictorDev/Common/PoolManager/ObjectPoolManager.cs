@@ -133,6 +133,7 @@ public class ObjectPoolManager : SingletonMonoBehaviour<ObjectPoolManager>
                 (queuePool.Count > 0) ? queuePool.Dequeue() : Instantiate(prefab, container);
 
             target.transform.parent = container;
+            target.transform.localScale = Vector3.one;
             target.gameObject.SetActive(true);
             RefreshContainerName();
             return target.GetComponent<T>();

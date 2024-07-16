@@ -33,7 +33,7 @@ namespace VictorDev.RevitUtils
         /// <summary>
         /// 透過DCS、DCN設備的deviceId，取得其設備的種類(DCS/DCN)
         /// </summary>
-        public static string GetDeviceTypeFromDeviceID(string deviceId)
+        public static string GetSystemTypeFromDeviceID(string deviceId)
         {
             string[] types = { enumDeviceType.DCS.ToString(), enumDeviceType.DCN.ToString() };
 
@@ -79,19 +79,19 @@ namespace VictorDev.RevitUtils
         /// <param name="dcsTextureDictionary">設備材質Dictionary</param>
         /// <param name="prefab">設備Prefab</param>
         /// <param name="container">放在哪個容器</param>
-        public static Transform CreateDeviceDCSfromDict(SO_DCS soDCS, Dictionary<string, Texture> dcsTextureDictionary, Transform prefab, Transform container)
+        public static Transform CreateDeviceDCSfromDict(SO_DCSDCN soDCS, Dictionary<string, Texture> dcsTextureDictionary, Transform prefab, Transform container)
         {
             Transform result = null;
-            string deviceType = RevitHandler.GetDCSTypeFromDeviceID(soDCS.deviceId);
+            string deviceType = GetDCSTypeFromDeviceID(soDCS.deviceId);
             // 建立DCR內的DCS
             if (dcsTextureDictionary.ContainsKey(deviceType))
             {
                 result = ObjectPoolManager.GetInstanceFromQueuePool(prefab, container);
                 result.GetComponent<MeshRenderer>().material.mainTexture = dcsTextureDictionary[deviceType];
-                result.name = deviceType;
+                result.name = GetGameObjectNameFormat(soDCS);
                 result.localScale = new Vector3(soDCS.width - 13f, soDCS.height - 0.5f, soDCS.length) * 0.01f;      // 高度-0.5f微調，避免重疊； 單位除100
 
-                Vector3 pos = RevitHandler.GetPositionFromRackU(soDCS.rackLocation);
+                Vector3 pos = GetPositionFromRackU(soDCS.rackLocation);
                 pos.y += result.localScale.y * 0.5f; //物件Pivot為中心點，所以再加上自身高度*0.5f
                 pos.z = -0.53f + result.localScale.z * 0.5f;      // 機櫃口座標0.58，減掉物件自身長度*0.5f
                 result.transform.localPosition = pos;
@@ -100,6 +100,8 @@ namespace VictorDev.RevitUtils
             else Debug.Log($"沒有材質圖：{deviceType}");
             return result;
         }
+
+        public static string GetGameObjectNameFormat(SO_Device soData) => $"[{soData.system}] {soData.deviceId}";
     }
 }
 

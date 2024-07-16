@@ -1,37 +1,81 @@
+using System.Collections.Generic;
 using UnityEngine;
+using VictorDev.RevitUtils;
 
 /// <summary>
-/// SO資產(DCR、DCE、DCP)
+/// SO資產設備共同欄位，做為父類別
 /// </summary>
-[CreateAssetMenu(fileName = "SO_Device", menuName = "資產列表/SO_Device")]
-public class SO_Device : ScriptableObject
+public abstract class SO_Device : ScriptableObject
 {
-    [Header(">>> 設備類別")]
-    [SerializeField] private string deviceType;
+    [Header(">>> 設備共同欄位")]
+    [SerializeField] private string _buildingCode;
+    [SerializeField] private string _deviceCode;
+    [SerializeField] private string _code;
+    [SerializeField] private string _area;
+    [SerializeField] private string _floor;
+    /// <summary>
+    /// 設備類型：DCR / DCS / DCN / DCE / DCP
+    /// </summary>
+    [SerializeField] protected string _system;
+    [SerializeField] private string _type;
+    [SerializeField] private string _description;
+    [SerializeField] private string _deviceId;
+    [SerializeField] private string _manufacturer;
+    [SerializeField] private string _useType;
+    [SerializeField] private string _assetCode;
+    [SerializeField] private string _mode;
 
-    [Header(">>> 設備簡碼")]
-    [SerializeField] private string deviceNo;
+    public string buildingCode => _buildingCode;
+    /// <summary>
+    /// 用於連接MQTT訂閱主題
+    /// </summary>
+    public string deviceCode => _deviceCode;
+    public string code => _code;
+    public string area => _area;
+    public string floor => _floor;
+    /// <summary>
+    /// 設備類型：DCR / DCS / DCN / DCE / DCP
+    /// </summary>
+    public string system => _system;
+    public string type => _type;
+    public string description => _description;
+    public string deviceId => _deviceId;
+    public string manufacturer => _manufacturer;
+    public string useType => _useType;
+    public string assetCode => _assetCode;
+    public string mode => _mode;
 
-    [Header(">>> 設備類別")]
-    [SerializeField] private string deviceName = "0005 系統Server";
+    /// <summary>
+    /// 原始解析好的JSON字典資料
+    /// </summary>
+    protected Dictionary<string, string> sourceDataDict { get; set; }
 
-    [Header(">>> 設備編碼")]
-    [SerializeField] private string deviceCode = "TG/TPE/IDC/01F/WE/Schneider-ER8202/153953";
+    public virtual void SetSourceDataDict(Dictionary<string, string> dataDict)
+    {
+        sourceDataDict = dataDict;
+        _buildingCode = CheckKeyExist("buildingCode");
+        _deviceCode = CheckKeyExist("deviceCode");
+        _code = CheckKeyExist("code");
+        _area = CheckKeyExist("area");
+        _floor = CheckKeyExist("floor");
+        _system = CheckKeyExist("system");
+        _type = CheckKeyExist("type");
+        _description = CheckKeyExist("description");
+        _deviceId = CheckKeyExist("deviceId");
+        _manufacturer = CheckKeyExist("manufacturer");
+        _useType = CheckKeyExist("useType");
+        _assetCode = CheckKeyExist("assetCode");
+        _mode = CheckKeyExist("mode");
 
-    [Header(">>> 模型編碼")]
-    [SerializeField] private string modelCode;
+        if (string.IsNullOrEmpty(_system)) _system = RevitHandler.GetSystemTypeFromDeviceID(deviceId);
 
-    [Header(">>> 系統")]
-    [SerializeField] private string systemName;
+        name = $"[{system}] {deviceId}";
+    }
 
-    [Header(">>> 型號")]
-    [SerializeField] private string modelType;
-
-    [Header(">>> 廠牌")]
-    [SerializeField] private string brand;
-
-    public DeviceListItem deviceListItem { get; set; }
-
-    public string DeviceName => deviceName;
-    public string DeviceCode => deviceCode;
+    protected string CheckKeyExist(string key, Dictionary<string, string> dataDict = null)
+    {
+        if (dataDict == null) dataDict = sourceDataDict;
+        if (dataDict.ContainsKey(key)) return dataDict[key];
+        else return "";
+    }
 }

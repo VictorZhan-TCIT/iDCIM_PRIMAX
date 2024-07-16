@@ -13,10 +13,10 @@ public class DeviceListItem : ToggleItem<SO_Device>
 
     protected override void OnSetSoData()
     {
-        soData.deviceListItem = this;
+      /*  soData.deviceListItem = this;
 
         txtDeviceName.SetText(soData.DeviceName);
-        txtDeviceCode.SetText(soData.DeviceCode);
+        txtDeviceCode.SetText(soData.DeviceCode);*/
     }
 
    

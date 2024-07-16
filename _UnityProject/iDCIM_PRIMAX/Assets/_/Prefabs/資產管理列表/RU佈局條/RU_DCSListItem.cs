@@ -3,7 +3,7 @@ using UnityEngine;
 using VictorDev.RevitUtils;
 using VictorDev.UI;
 
-public class RU_DCSListItem : ToggleItem<SO_DCS>
+public class RU_DCSListItem : ToggleItem<SO_DCSDCN>
 {
     [SerializeField] private TextMeshProUGUI txtDeviceName;
 

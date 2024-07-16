@@ -10,7 +10,7 @@ public class DeviceList : ScrollRectToggleList<DeviceListItem, SO_Device>
     {
         this.onToggleChanged.AddListener((toggleItem) =>
         {
-            Debug.Log($"soData: {toggleItem.soData.DeviceName} / isOn:{toggleItem.isOn}");
+         //   Debug.Log($"soData: {toggleItem.soData.DeviceName} / isOn:{toggleItem.isOn}");
         });
     }
 
