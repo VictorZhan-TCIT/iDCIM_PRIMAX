@@ -11,13 +11,13 @@ namespace VictorDev.UI
     /// <para>+ 可用於ScrollView列表項目或單一UI組件</para>
     /// </summary>
     [RequireComponent(typeof(Toggle))]
-    public abstract class ToggleItem<SO> : MonoBehaviour where SO : ScriptableObject
+    public abstract class ToggleItem<SO> : MonoBehaviour, IToggleItem where SO : ScriptableObject
     {
         [Header(">>> ScriptableObject資料")]
         [SerializeField] private SO _soData;
 
         [Header(">>> 點選Toggle時發送SO與Toggle.isOn")]
-        public UnityEvent<ToggleItem<SO>> onToggleChanged;
+        public UnityEvent<IToggleItem> onToggleChanged;
 
         [SerializeField] protected Toggle toggle;
 
@@ -50,4 +50,10 @@ namespace VictorDev.UI
         }
         protected virtual void OnValidate() => toggle ??= GetComponent<Toggle>();
     }
+}
+
+public interface IToggleItem
+{
+    bool isOn { get; }
+    ToggleGroup toggleGroup { set; }
 }

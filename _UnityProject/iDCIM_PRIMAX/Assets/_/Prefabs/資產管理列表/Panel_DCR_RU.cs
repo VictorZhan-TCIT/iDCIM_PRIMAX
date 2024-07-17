@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using VictorDev.RevitUtils;
 
@@ -17,6 +18,9 @@ public class Panel_DCR_RU : MonoBehaviour
     [Header(">>> 負重")]
     [SerializeField] private ProgressBarController pbWeight;
 
+    [Header(">>> 點選DCS/DCN項目時觸發")]
+    public UnityEvent<RU_DCSListItem> onToggledEvent = new UnityEvent<RU_DCSListItem>();
+
     /// <summary>
     /// RU每單位之高度
     /// </summary>
@@ -24,7 +28,10 @@ public class Panel_DCR_RU : MonoBehaviour
 
     private SO_DCR _soDCR { get; set; }
 
-    public SO_DCR soDCR
+    /// <summary>
+    /// 設定DCR資料，與動態生成底下的DCS/DCN
+    /// </summary>
+    private SO_DCR soDCR
     {
         get => _soDCR;
         set
@@ -37,6 +44,14 @@ public class Panel_DCR_RU : MonoBehaviour
         }
     }
 
+
+    private DeviceModel_DCR deviceModel_DCR { get; set; }
+    public void SetModelDCR(DeviceModel_DCR dcr)
+    {
+        deviceModel_DCR = dcr;
+        soDCR = deviceModel_DCR.soData;
+    }
+
     /// <summary>
     /// 設定DCS列表RU排列
     /// </summary>
@@ -44,7 +59,7 @@ public class Panel_DCR_RU : MonoBehaviour
     {
         ObjectPoolManager.PushToPool<RU_DCSListItem>(ruDeviceContainer);
 
-        IEnumerator CreateDevice()
+        IEnumerator CreateRUDevices()
         {
             soDCR.DCS_List.ForEach(soDCS =>
             {
@@ -59,48 +74,14 @@ public class Panel_DCR_RU : MonoBehaviour
 
                 float posY = (soDCS.rackLocation - 1) * ruHeight + 3 - 1056;
                 item.transform.localPosition = new Vector2(0, posY);
+
+                item.modelDCSDCN = deviceModel_DCR.dcsdcnDict[soDCS.deviceId];
+
+                //點擊時
+                item.onToggleChanged.AddListener((target) => onToggledEvent?.Invoke(target as RU_DCSListItem));
             });
             yield return null;
         }
-        StartCoroutine(CreateDevice());
-    }
-
-    void SetPositionByAnchor(RectTransform rectTransform, Vector2 targetPosition)
-    {
-        if (rectTransform == null)
-        {
-            Debug.LogError("RectTransform is null.");
-            return;
-        }
-
-        RectTransform parentRectTransform = rectTransform.parent as RectTransform;
-        if (parentRectTransform == null)
-        {
-            Debug.LogError("Parent is not a RectTransform.");
-            return;
-        }
-
-        Vector2 anchorMin = rectTransform.anchorMin;
-        Vector2 anchorMax = rectTransform.anchorMax;
-        Vector2 pivot = rectTransform.pivot;
-
-        // Calculate the position based on the anchor
-        Vector2 anchorPosition = new Vector2(
-            (anchorMin.x + anchorMax.x) / 2 * parentRectTransform.rect.width,
-            (anchorMin.y + anchorMax.y) / 2 * parentRectTransform.rect.height
-        );
-
-        // Adjust the target position based on pivot
-        Vector2 pivotOffset = new Vector2(
-            (pivot.x - 0.5f) * rectTransform.rect.width,
-            (pivot.y - 0.5f) * rectTransform.rect.height
-        );
-
-        // Set the localPosition relative to the anchor position
-        rectTransform.localPosition = new Vector3(
-            targetPosition.x - anchorPosition.x + pivotOffset.x,
-            targetPosition.y - anchorPosition.y + pivotOffset.y,
-            rectTransform.localPosition.z
-        );
+        StartCoroutine(CreateRUDevices());
     }
 }

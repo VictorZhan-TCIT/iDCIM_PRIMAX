@@ -1,17 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using VictorDev.Parser;
 
 public class DeviceManager : MonoBehaviour
 {
-    [SerializeField] private List<Transform> dcsPrefabList;
-    private Dictionary<string, Transform> dcsDictionary { get; set; } = new Dictionary<string, Transform>();
-
+    [Header(">>> DCS/DCN模型Prefab")]
     [SerializeField] private Transform dcsPrefab;
+    [Header(">>> DCS/DCN材質庫")]
     [SerializeField] private List<Texture> dcsTextureList;
     private Dictionary<string, Texture> dcsTextureDictionary { get; set; } = new Dictionary<string, Texture>();
-
-
 
     [Header(">>> 場景上模型 - DCR")]
     [SerializeField] private List<DeviceModel_DCR> modelDCRList;
@@ -19,30 +17,19 @@ public class DeviceManager : MonoBehaviour
     [Header(">>> 從WebAPI取得的DCR列表")]
     [SerializeField] private List<SO_DCR> soDCRList;
 
-    public Panel_DeviceInfo panel_DeviceInfo;
-    public Panel_DCR_RU panel_DCRInfo;
+    [Header(">>> 右上角DCR基本資訊列表")]
+    [SerializeField] private Panel_DeviceInfo panel_DeviceInfo;
+    [Header(">>> DCR面板 - RU佈局排列")]
+    [SerializeField] private Panel_DCR_RU panel_DCR_RUInfo;
+    [Header(">>>COBie面板")]
+    [SerializeField] private Panel_COBie panelCOBie;
 
-    /*   [Header(">>> 設備列表")]
-       [SerializeField] private DeviceList deviceList;
+    [Header(">>> 點擊設備模型時Invoke deviceId")]
+    public UnityEvent<string> onClickDevice = new UnityEvent<string>();
 
-       /// <summary>
-       /// soData資料列表
-       /// </summary>
-       private List<SO_Device> soDataList_DCR { get; set; } = new List<SO_Device>();
-       private List<SO_Device> soDataList_DCE { get; set; } = new List<SO_Device>();
-       private List<SO_Device> soDataList_DCP { get; set; } = new List<SO_Device>();
-
-
-       private void Start()
-       {
-           SwitchToDCR();
-       }
-
-   *  public void SwitchToDCR()
-       {
-           deviceList.SetDataList(soDataList_DCR);
-       }*/
-
+    /// <summary>
+    /// 以字典按elementId儲存各個DCR模型
+    /// </summary>
     private Dictionary<string, DeviceModel_DCR> modelDcrDict = new Dictionary<string, DeviceModel_DCR>();
 
     /// <summary>
@@ -55,40 +42,63 @@ public class DeviceManager : MonoBehaviour
 
     private void Awake()
     {
-        //設定DCS Prefab Dictionary
-        dcsPrefabList.ForEach(itemTrans =>
-        {
-            dcsDictionary[itemTrans.name] = itemTrans;
-        });
-
-        dcsTextureList.ForEach(texture =>
-        {
-            dcsTextureDictionary[texture.name] = texture;
-        });
+        //設定DCS 材質 Dictionary
+        dcsTextureList.ForEach(texture => dcsTextureDictionary[texture.name] = texture);
 
         //設定DCS點擊後，傳遞soData給資訊面板 
         modelDCRList.ForEach(deviceModelDCR =>
         {
+            //以字典儲存各個DCR模型
             modelDcrDict[deviceModelDCR.elementId] = deviceModelDCR;
-            deviceModelDCR.onToggleChanged.AddListener((deviceModel) =>
-            {
-                //取消上一個模型的選取狀態
-                if (currentSelectedModel != null) currentSelectedModel.isSelected = false;
-                currentSelectedModel = deviceModel;
 
-                panel_DeviceInfo.gameObject.SetActive(true);
-                panel_DCRInfo.gameObject.SetActive(true);
-
-                //   panel_DeviceInfo.soDCR = (currentSelectedModel as DeviceModel_DCR).soData;
-                // panel_DCRInfo.soDCR = (currentSelectedModel as DeviceModel_DCR).soData;
-
-            });
+            deviceModelDCR.onToggleChanged.AddListener(OnModelClicked);
         });
+
+        // 當RU列表項目被點擊時
+        //panel_DCR_RUInfo.onToggledEvent.AddListener(OnModelClicked);
     }
 
+    /// <summary>
+    /// 當DCR/DCS/DCN模型被點擊時
+    /// </summary>
+    private void OnModelClicked(IDeviceModel deviceModel)
+    {
+        if (deviceModel.isSelected == false) return;
+
+        if (deviceModel is RU_DCSListItem item)
+        {
+            if (currentSelectedModel == (deviceModel as RU_DCSListItem).modelDCSDCN) return;
+            currentSelectedModel = (deviceModel as RU_DCSListItem).modelDCSDCN;
+            currentSelectedModel.isSelected = true;
+            return;
+        }
+        else
+        {
+            if (currentSelectedModel == deviceModel) return;
+            //取消上一個模型的選取狀態
+            if (currentSelectedModel != null) currentSelectedModel.isSelected = false;
+            currentSelectedModel = deviceModel;
+        }
+
+        bool isDCR = currentSelectedModel.system == "DCR";
+
+        // 設置soDCR給相關面板並顯示
+        panel_DeviceInfo.gameObject.SetActive(true);
+        panel_DCR_RUInfo.gameObject.SetActive(true);
+
+        if (isDCR)
+        {
+            panel_DeviceInfo.soDCR = (currentSelectedModel as DeviceModel_DCR).soData;
+            panel_DCR_RUInfo.SetModelDCR(currentSelectedModel as DeviceModel_DCR);
+        }
+        else if (currentSelectedModel.system == "DCS" || currentSelectedModel.system == "DCN")
+        {
+            onClickDevice?.Invoke((currentSelectedModel as DeviceModel_DCSDCN).soData.deviceId);
+        }
+    }
 
     /// <summary>
-    /// 取得WebAP資料後，設置給每一台DCR
+    /// 取得WebAP資料後，設置給每一台DCR，並動態建立其DCS/DCN
     /// </summary>
     public void Parse_AllDCRInfo(string jsonString)
     {
@@ -110,5 +120,16 @@ public class DeviceManager : MonoBehaviour
             modelDcrDict[soDCR.elementId].soData = soDCR;
             modelDcrDict[soDCR.elementId].CreateDeviceDCSfromDict(dcsTextureDictionary, dcsPrefab);
         });
+    }
+
+    /// <summary>
+    /// 取得WebAP資料後，解析COBie後給其面板資訊
+    /// </summary>
+    internal void Parse_COBie(string jsonString)
+    {
+        SO_COBie soCOBie = ScriptableObject.CreateInstance<SO_COBie>();
+        soCOBie.Parse(jsonString);
+
+        panelCOBie.soData = soCOBie;
     }
 }

@@ -15,11 +15,15 @@ public class GameManager : MonoBehaviour
         {
             module.onClickModel.AddListener(cameraManager.LookAtTarget);
         });
+
+        webAPIManager.onGetAllDCRInfo.AddListener(deviceManager.Parse_AllDCRInfo);
+        webAPIManager.onGetDeviceCOBie.AddListener(deviceManager.Parse_COBie);
+
+        deviceManager.onClickDevice.AddListener(webAPIManager.GetCOBieByDeviceId);
     }
 
     private void Start()
     {
-        webAPIManager.onGetAllDCRInfo.AddListener(deviceManager.Parse_AllDCRInfo);
         webAPIManager.GetAllDCRInfo();
     }
 }

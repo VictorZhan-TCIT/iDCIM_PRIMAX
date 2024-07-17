@@ -74,7 +74,7 @@ namespace VictorDev.Async.CoroutineUtils
         public void Stop()
         {
             material.DisableKeyword("_EMISSION");
-            CoroutineHandler.CancellCoroutine(iEnumerator);
+            if (iEnumerator != null) CoroutineHandler.CancellCoroutine(iEnumerator);
         }
 
         private void SetColor(float indensity)

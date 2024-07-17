@@ -48,6 +48,12 @@ public abstract class DeviceModel<T> : MonoBehaviour, IDeviceModel where T : SO_
         }
     }
 
+    /// <summary>
+    /// 設備類型：DCR / DCS / DCN / DCE / DCP
+    /// </summary>
+    public string system => soData.system;
+
+
     private void Awake()
     {
         void CheckStatus(Action action)
@@ -76,4 +82,8 @@ public abstract class DeviceModel<T> : MonoBehaviour, IDeviceModel where T : SO_
 public interface IDeviceModel
 {
     bool isSelected { get; set; }
+    /// <summary>
+    /// 設備類型：DCR / DCS / DCN / DCE / DCP
+    /// </summary>
+    string system { get; }
 }

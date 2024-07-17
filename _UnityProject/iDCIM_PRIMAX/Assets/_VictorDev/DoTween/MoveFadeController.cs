@@ -20,8 +20,10 @@ public class MoveFadeController : MonoBehaviour
     [Header(">>> 是否依照ChildIndex值來設定Delay")]
     [SerializeField] private bool isDelayByChildIndex = false;
 
+    [Header(">>> OnEnabled動畫開始時")]
+    public UnityEvent OnTweenStart = new UnityEvent();
     [Header(">>> OnEnabled動畫結束時")]
-    public UnityEvent OnEnabledComplete;
+    public UnityEvent OnEnabledComplete = new UnityEvent();
 
     [Header(">>> UI組件")]
     [SerializeField] private CanvasGroup cg;
@@ -43,7 +45,8 @@ public class MoveFadeController : MonoBehaviour
     }
 
     [ContextMenu("- Dotween: Play")]
-    private void OnEnable()
+    //private void OnEnable() => Play();
+    public void Play()
     {
         targetDealy = isDelayByChildIndex ? delay * transform.GetSiblingIndex() : delay;
 
@@ -55,7 +58,7 @@ public class MoveFadeController : MonoBehaviour
         }
 
         // LocalMove
-        if(offsetPos == Vector2.zero)
+        if (offsetPos == Vector2.zero)
         {
             OnCompleteHandler();
             return;
@@ -71,7 +74,12 @@ public class MoveFadeController : MonoBehaviour
         moveTween = moveTween.SetEase(ease).SetDelay(targetDealy).OnStart(OnStartHandler).OnComplete(OnCompleteHandler);
     }
 
-    private void OnStartHandler() => cg.interactable = false;
+    private void OnStartHandler()
+    {
+        cg.interactable = false;
+        OnTweenStart?.Invoke();
+    }
+
     private void OnCompleteHandler()
     {
         cg.interactable = true;

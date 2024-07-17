@@ -32,15 +32,12 @@ namespace VictorDev.Net.WebAPI
         {
             get
             {
-                if (contentTypeTable == null)
-                {
-                    contentTypeTable = new Dictionary<enumResponseDataType, string>()
+                contentTypeTable ??= new Dictionary<enumResponseDataType, string>()
                     {
                         { enumResponseDataType.Default, "application/x-www-form-urlencoded" },
                         { enumResponseDataType.JSON, "application/json" },
                         { enumResponseDataType.Text, "text/plain" },
                     };
-                }
                 return contentTypeTable[responseDataType];
             }
         }
@@ -61,8 +58,9 @@ namespace VictorDev.Net.WebAPI
         [SerializeField] private Body body;
         public enumBody bodyType => body.bodyType;
         public WWWForm formData => body.formData;
-        public string BodyJSON => body.rawString;
+        public void SetFormData(Dictionary<string, string> dataSet) => body.SetFormData(dataSet);
 
+        public string BodyJSON => body.rawString;
 
         public WebAPI_Request(string url) => this.apiURL = url;
 
@@ -179,6 +177,15 @@ namespace VictorDev.Net.WebAPI
 
             public enumBody bodyType => (isActivated) ? _bodyType : enumBody.none;
 
+            public void SetFormData(Dictionary<string, string> dataSet)
+            {
+                fieldList.Clear();
+                foreach (string key in dataSet.Keys)
+                {
+                    fieldList.Add(new KeyValueItem(key, dataSet[key]));
+                }
+            }
+
             /// <summary>
             /// form-data型態的參數值
             /// </summary>
@@ -225,7 +232,9 @@ namespace VictorDev.Net.WebAPI
         [Serializable]
         public class KeyValueItem
         {
-            public string key, value;
+            public string key;
+            [TextArea(1, 5)]
+            public string value;
 
             public KeyValueItem(string key, string value)
             {

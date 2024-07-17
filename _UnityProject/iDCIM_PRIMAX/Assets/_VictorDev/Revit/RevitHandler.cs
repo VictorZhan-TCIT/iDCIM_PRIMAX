@@ -35,7 +35,7 @@ namespace VictorDev.RevitUtils
         /// </summary>
         public static string GetSystemTypeFromDeviceID(string deviceId)
         {
-            string[] types = { enumDeviceType.DCS.ToString(), enumDeviceType.DCN.ToString() };
+            string[] types = { enumSystemType.DCS.ToString(), enumSystemType.DCN.ToString() };
 
             foreach (string deviceType in types)
             {
@@ -73,7 +73,7 @@ namespace VictorDev.RevitUtils
         }
 
         /// <summary>
-        /// 比對材質名稱Dictionary，建立DCS/DCN
+        /// 比對材質名稱Dictionary，建立DCS/DCN模型
         /// </summary>
         /// <param name="soDCS">ScriptableObject</param>
         /// <param name="dcsTextureDictionary">設備材質Dictionary</param>
@@ -89,8 +89,11 @@ namespace VictorDev.RevitUtils
                 result = ObjectPoolManager.GetInstanceFromQueuePool(prefab, container);
                 result.GetComponent<MeshRenderer>().material.mainTexture = dcsTextureDictionary[deviceType];
                 result.name = GetGameObjectNameFormat(soDCS);
+
+                //依照給的長寬高來設置尺吋
                 result.localScale = new Vector3(soDCS.width - 13f, soDCS.height - 0.5f, soDCS.length) * 0.01f;      // 高度-0.5f微調，避免重疊； 單位除100
 
+                //依照給的位置U來設置在機櫃裡的高度位置
                 Vector3 pos = GetPositionFromRackU(soDCS.rackLocation);
                 pos.y += result.localScale.y * 0.5f; //物件Pivot為中心點，所以再加上自身高度*0.5f
                 pos.z = -0.53f + result.localScale.z * 0.5f;      // 機櫃口座標0.58，減掉物件自身長度*0.5f
@@ -105,4 +108,7 @@ namespace VictorDev.RevitUtils
     }
 }
 
-public enum enumDeviceType { DCS, DCN }
+/// <summary>
+/// 設備類型：DCR / DCS / DCN / DCE / DCP
+/// </summary>
+public enum enumSystemType { DCR, DCS, DCN, DCE, DCP }

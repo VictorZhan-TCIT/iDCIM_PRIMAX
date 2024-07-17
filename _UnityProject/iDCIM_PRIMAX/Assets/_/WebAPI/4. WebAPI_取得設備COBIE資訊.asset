@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 254bcd1da1c878549b07bd63fde02233, type: 3}
   m_Name: "4. WebAPI_\u53D6\u5F97\u8A2D\u5099COBIE\u8CC7\u8A0A"
   m_EditorClassIdentifier: 
-  method: 0
+  method: 2
   authorization:
     authorizationType: 1
-    token: 
+    token: eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiVENJVDIwMjQiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJ0Y2l0IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9ncm91cHNpZCI6IlRQRSIsIklwQWRkcmVzcyI6IjE5Mi4xNjguMC4yNTQiLCJleHAiOjE3MjEyODIxMTZ9.I8M2ru25GtHvZyAFp8Cg6NNwEG9TLwfPsC3tR_i4p1NnpdnMRF9GB94l4q1FAhp-wE_KJnTVJvdnFfIPFeANyg
+  responseDataType: 0
   ipConfig: {fileID: 11400000, guid: bf22a150623a788409e547b68e8b35ef, type: 2}
   apiURL: api/Data/convert/deviceId/element
   queryParams:
@@ -26,5 +27,5 @@ MonoBehaviour:
     _bodyType: 1
     fieldList:
     - key: deviceId
-      value: "HWACOM+TPE+IDC+FL1+1+DCR++Rack: Schneider-ER8222\u642D\u96FB\u6E90+3"
+      value: 'HWACOM+TPE+IDC+FL1+1+DCN++Router-1: Brocade-CER 2024C-4X-Router-1U+134'
     _rawString: 
