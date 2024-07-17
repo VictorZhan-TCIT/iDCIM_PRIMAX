@@ -44,10 +44,12 @@ public class MoveFadeController : MonoBehaviour
         formPos = originalPos + offsetPos;
     }
 
+    private void OnEnable() => Play();
     [ContextMenu("- Dotween: Play")]
-    //private void OnEnable() => Play();
     public void Play()
     {
+        moveTween?.Kill();
+
         targetDealy = isDelayByChildIndex ? delay * transform.GetSiblingIndex() : delay;
 
         // Fade
