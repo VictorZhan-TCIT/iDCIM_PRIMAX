@@ -21,6 +21,14 @@ namespace VictorDev.Async.CoroutineUtils
         private float targetValue { get; set; }
         private IEnumerator enumerator;
 
+        private void Awake()
+        {
+            /*slider.onValueChanged.AddListener((targetValue) =>
+            {
+                enumerator = CoroutineHandler.LerpValue(0, targetValue, (returnValue) => slider.value = returnValue, duration + Random.Range(0, duration));
+            });*/
+        }
+
         private void OnEnable()
         {
             if (slider != null)
@@ -34,7 +42,6 @@ namespace VictorDev.Async.CoroutineUtils
                 enumerator = CoroutineHandler.LerpValue(0, targetValue, (returnValue) => textMeshPro.SetText(returnValue.ToString()), duration + Random.Range(0, duration));
             }
         }
-
         private void OnDisable()
         {
             if (slider != null) slider.value = targetValue;
